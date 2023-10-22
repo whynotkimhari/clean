@@ -4,8 +4,8 @@ import StdEnv
 
 
 // Please fill the data required below.
-//<Name>
-//<Neptun_code>
+//<Name>				BUI NGUYEN KIM HAI
+//<Neptun_code>			QMIBHU
 //Functional Programming & mid-term
 //2021.September.14 
 //This solution was submitted and prepared by <Name, Neptun_code> 
@@ -31,7 +31,8 @@ import StdEnv
  an Armstrong number or not.
 */
 
-//armstrong :: Int -> Bool
+armstrong :: Int -> Bool
+armstrong num = sum(map (\x = (x rem 10)^3) (takeWhile ((<>)0) (iterate (\x = x / 10) num))) == num
 
 //Start = armstrong 153 // True
 //Start = armstrong 370 // True
@@ -45,12 +46,13 @@ import StdEnv
  of occurrences in the list.
 */
 
-//occNum :: [Int] -> [Int]
+occNum :: [Int] -> [Int]
+occNum list = map (\num = length(filter ((==)num) list)) list
 
-// Start = occNum [1,1,1,1,2,3,2,5,6,2,2,2,5] // [4,4,4,4,5,1,5,2,1,5,5,5,2]
-// Start = occNum [1..5] // [1,1,1,1,1]
-// Start = occNum ([1..5] ++ [1..7]) // [2,2,2,2,2,2,2,2,2,2,1,1]
-// Start = occNum([7..9] ++ [7..9] ++ [7..9]) // [3,3,3,3,3,3,3,3,3]
+//Start = occNum [1,1,1,1,2,3,2,5,6,2,2,2,5] // [4,4,4,4,5,1,5,2,1,5,5,5,2]
+//Start = occNum [1..5] // [1,1,1,1,1]
+//Start = occNum ([1..5] ++ [1..7]) // [2,2,2,2,2,2,2,2,2,2,1,1]
+//Start = occNum([7..9] ++ [7..9] ++ [7..9]) // [3,3,3,3,3,3,3,3,3]
 
 
 /* 3. Gap2
@@ -61,11 +63,14 @@ import StdEnv
  e.g: [1,5,8] = [1,3,5,7,9]
 */
 
-//gap2 :: [Int] -> [Int]
-
+gap2 :: [Int] -> [Int]
+gap2 [] = []
+gap2 [x,y:xs] 
+| x rem 2 == (last xs) rem 2 = [x,(x+2)..(last xs)]
+= [x,(x+2)..(last xs + 1)]
 //Start = gap2 [1,5,8] // [1,3,5,7,9]
 //Start = gap2 [1,5,15] // [1,3,5,7,9,11,13,15]
-//Start = gap2 [] 
+//Start = gap2 []
 
 
 /* 4. Not Palindrome
@@ -76,7 +81,18 @@ import StdEnv
  e.g. 12521 is a palindrome number. 
 */
 
-//getRidPal :: [[Int]] -> [[Int]]
+numToList :: Int -> [Int]
+numToList num = map (\x = x rem 10) (takeWhile ((<>)0) (iterate (\x = x / 10) num))
+
+isNotPal :: Int -> Bool
+isNotPal num 
+| num < 10 = True
+= list <> reverse list
+where list = numToList num
+
+getRidPal :: [[Int]] -> [[Int]]
+getRidPal lists = map (\list = filter isNotPal list) lists
+
 
 //Start = getRidPal [[1,2,1111],[151,22,3455]] // [[1,2],[3455]]
 //Start = getRidPal [[1,222],[151,202,50505]] // [[1],[]]
@@ -88,7 +104,13 @@ import StdEnv
  There will be no negative integers and consider the number 1 not a prime.
 */
 
-//removeNotPrime :: [Int] -> [Int]
+isNotPrime :: Int -> Bool
+isNotPrime num 
+| num == 1 = True
+= length(filter (\x = num rem x == 0) [2..(num - 1)]) <> 0
+
+removeNotPrime :: [Int] -> [Int]
+removeNotPrime list = filter isNotPrime list
 
 //Start = removeNotPrime [1..10] // [1,4,6,8,9,10]
 //Start = removeNotPrime [13..20] // [14,15,16,18,20]
@@ -106,13 +128,13 @@ import StdEnv
  E.g: zipWith addTwoNumbers [1,2,3] [5,6,7] = [1+5,2+6,3+7] = [6,8,10]
 */
 //DON'T DELETE THESE FUNCTIONS !!!
-//addTwoNumber x y = x + y
-//prodTwoNumber x y = x * y
-//niceTwoNumber x y = x rem y
+addTwoNumber x y = x + y
+prodTwoNumber x y = x * y
+niceTwoNumber x y = x rem y
 //
 
-//zipWith :: (Int Int -> Int) [Int] [Int] -> [Int]
-
+zipWith :: (Int Int -> Int) [Int] [Int] -> [Int]
+zipWith func listA listB = [func a b \\ a <- listA & b <- listB] 
 //Start = zipWith addTwoNumber [1,2,3] [5,6,7] // [6,8,10]
 //Start = zipWith prodTwoNumber [1,2,3] [5,6,7] // [5,12,21]
 //Start = zipWith niceTwoNumber [5,6,7] [1,2,3] // [0,0,1]
@@ -131,8 +153,16 @@ import StdEnv
       output: 4 recursive calls
 */
 
-//collatz :: Int -> Int
+loop :: Int -> [Int]
+loop num
+| num == 2 = []
+| num rem 2 == 0 = [num] ++ loop (num / 2)
+= [num] ++ loop (3*num + 1)
 
+collatz :: Int -> Int
+collatz num 
+| num <= 1 = abort "The number must be greater than 1"
+= length (loop num) - 1
 //Start = collatz 10 // 4
 //Start = collatz 20000000 // 144
 //Start = collatz 5 // 3
@@ -148,12 +178,17 @@ import StdEnv
  3 as only [], [1,2,3,4] and [9] are "good".
 */
 
-//isGood :: Int [Int] -> Int
+check :: [Int] -> Bool
+check list = even && odd
+where even = foldr (&&) True [(list !! i) rem 2 <> 0 \\ i <- [0,2..(length list - 1)]]
+	  odd  = foldr (&&) True [(list !! j) rem 2 == 0 \\ j <- [1,3..(length list - 1)]]
 
-// Start = isGood [[],[1,2,3,4],[8,3,4],[9],[3,4,4]] // 3
-// Start = isGood [[1,2,3,4],[3,4,4],[3,42],[12,2,1,2]] // 2
-// Start = isGood [[],[1,2,3,4],[],[8,3,4],[1],[2],[9],[3,4,4]] // 5
-// Start = isGood [] // 0
+isGood :: [[Int]] -> Int
+isGood lists = length ( filter check lists )
+//Start = isGood [[],[1,2,3,4],[8,3,4],[9],[3,4,4]] // 3
+//Start = isGood [[1,2,3,4],[3,4,4],[3,42],[12,2,1,2]] // 2
+//Start = isGood [[],[1,2,3,4],[],[8,3,4],[1],[2],[9],[3,4,4]] // 5
+//Start = isGood [] // 0
 
 
 /* 9. Symmetrical lists
@@ -162,7 +197,8 @@ import StdEnv
  if the sum of the sublist is greater than 10.
 */
 
-//symSumGreater10 :: [[Int]] -> [[Int]]
+symSumGreater10 :: [[Int]] -> [[Int]]
+symSumGreater10 lists = map (\x = x ++ reverse x) ( filter (\list = sum list >= 10) lists )
 
 //Start = symSumGreater10 [[1,2,3],[3,4,5,6],[4,5,1,2]] // [[3,4,5,6,6,5,4,3],[4,5,1,2,2,1,5,4]]
 //Start = symSumGreater10 [] // []
@@ -178,7 +214,8 @@ import StdEnv
  Assume that the indexes are all valid.
 */
 
-//elementInInterval :: [(Int ,Int,[Int])]-> [[Int]]
+elementInInterval :: [(Int ,Int,[Int])] -> [[Int]]
+elementInInterval lists = map (\ (left,right,list) = [list !! i \\ i <- [0..(length list - 1)] | (i >= left && i <= right)] ) lists
 
 //Start = elementInInterval [(2,5,[1..10])] //[[3,4,5,6]]
 //Start = elementInInterval [(5,6,[1..8]), (3,5,[4..9])] //[[6,7],[7,8,9]]

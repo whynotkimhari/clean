@@ -1,5 +1,5 @@
 .comp 920 000111010010000
-.start __idk1_Start
+.start __midterm2_Start
 .depend "_SystemEnumStrict" "20230927194349"
 .depend "_SystemStrictLists" "20230927194349"
 .depend "StdStrictLists" "20230927194349"
@@ -22,7 +22,7 @@
 .depend "StdOverloaded" "20230927194349"
 .depend "StdBool" "20230927194350"
 .depend "StdEnv" "20230927194350"
-.module m_idk1 "idk1" "20231022164525"
+.module m_midterm2 "midterm2" "20231022235611"
 .endinfo
 .impmod _system
 .implab _cycle_in_spine
@@ -60,16 +60,20 @@
 .implab n_S.6 ea_S.6
 .implab _driver
 .impmod StdList
+.impdesc e_StdList_d!!
+.implab e_StdList_n!! _
+.implab e_StdList_smap
 .implab e_StdList_slength;47
-.implab e_StdList_ssum;72
 .impmod StdInt
-.implab e_StdInt_s/;10
+.implab e_StdInt_s+;6
+.implab e_StdInt_s-;7
+.implab e_StdInt_sone;11
 .implab e_StdInt_s<;17
 .impmod StdBool
 .implab e_StdBool_snot
-.export __idk1_Start
+.export __midterm2_Start
 .o 0 0
-__idk1_Start
+__midterm2_Start
 	build _ 0 n2
 .d 1 0
 	jmp _driver
@@ -85,134 +89,162 @@ s2
 	buildh _Nil 0
 	buildI 9
 	buildh _Cons 2
-	buildI 1
+	buildI 8
 	buildh _Cons 2
-	buildI 0
+	buildI 7
 	buildh _Cons 2
+	buildI 6
 	buildh _Cons 2
-	buildh _Nil 0
-	buildI -2
-	buildh _Cons 2
-	buildI 0
-	buildh _Cons 2
-	buildI 9
-	buildh _Cons 2
-	buildh _Cons 2
-	buildh _Nil 0
-	buildI 3
+	buildI 5
 	buildh _Cons 2
 	buildI 4
 	buildh _Cons 2
-	buildI 8
+	buildI 3
 	buildh _Cons 2
+	buildI 2
+	buildh _Cons 2
+	buildI 1
+	buildh _Cons 2
+	buildI 7
+	buildI 4
+	buildh _Tuple 3
 	buildh _Cons 2
 .d 2 0
 	jmp s1
 .o 2 0
 s1
-	push_a 0
-	updatepop_a 0 1
-.d 2 0
-	jmp s3
-.n 1 _ ea3
-.o 1 0
-n3
-	push_node _cycle_in_spine 1
-.o 2 0
-ea3
-	jsr_eval 0
-.o 2 0
-s3
-	push_a 0
-	updatepop_a 0 1
-.d 2 0
-	jmp s5
-.o 2 0
-s5
-	eq_desc _Cons 2 0
-	jmp_true case.1
-	jmp case.2
-case.1
-	repl_args 2 2
-	push_a 0
-	jsr_eval 0
-.d 1 0
-	jsr s4
-.o 0 1 b
-	jmp_false else.3
+	buildh d4 0
 	push_a 1
-	build _ 1 n3
 	push_a 1
-	build _ 1 n8
-	fillh _Cons 2 4
-	pop_a 2
-.d 1 0
-	rtn
-else.3
-	push_a 1
-	jsr_eval 0
-	updatepop_a 0 2
-.d 2 0
-	jmp s3
-case.2
-	fillh _Nil 0 1
+	update_a 1 2
+	update_a 0 1
 	pop_a 1
-.d 1 0
-	rtn
-.n 1 _ ea8
-.o 1 0
-n8
-	push_node _cycle_in_spine 1
+	update_a 1 2
+	updatepop_a 0 1
+.d 3 0
+	jmp e_StdList_smap
+.desc d4 _hnf l4 1 0 "<lambda>[line:218];32;32"
 .o 2 0
-ea8
+l4
+	update_a 1 0
+	create
+	update_a 0 2
+	pop_a 1
 .o 2 0
-s8
-	push_a 0
+ea4
 	jsr_eval 0
+	repl_args 3 3
+	jsr_eval 2
+.o 4 0
+s4
+	push_a 2
 .d 1 0
 	jsr e_StdList_slength;47
 .o 0 1 i
-	push_a 0
-	updatepop_a 0 1
-.d 1 0
-	jsr e_StdList_ssum;72
-.o 0 1 i
-	divI
-	fillI_b 0 0
+	pushI 1
+	push_b 1
+	update_b 1 2
+	update_b 0 1
 	pop_b 1
-.d 1 0
-	rtn
-.o 1 0
-s4
-	eq_desc _Nil 0 0
-	jmp_true case.4
-	jmp case.5
-case.4
-	pop_a 1
-	pushB TRUE
-.d 0 1 b
-	rtn
-case.5
-	repl_args 2 2
-	push_a 0
-	jsr_eval 0
-	pushI_a 1
-	pop_a 1
+	subI
 	pushI 0
+	push_a 1
+	push_a 1
+	push_a 4
+	update_a 2 5
+	update_a 1 4
+	updatepop_a 0 3
+.d 4 2 ii
+	jmp s3
+.o 4 2 ii
+s3
+	push_b 0
+	push_b 2
+	ltI
+	notB
+	jmp_false else.1
+	push_a 1
+	jsr_eval 0
+	pushI_a 2
+	pop_a 1
+	push_b 1
+	ltI
+	notB
+	jmp_false else.2
+	push_a 2
+	jsr_eval 0
+	pushI_a 3
+	pop_a 1
+	push_b 1
 	push_b 1
 	update_b 1 2
 	update_b 0 1
 	pop_b 1
 	ltI
 	notB
-	jmp_false else.6
-	push_a 1
-	jsr_eval 0
-	updatepop_a 0 2
+	jmp_false else.2
+	push_b 1
+	push_b 1
+	push_a 2
+	push_a 2
+	push_a 2
+	build_u _ 3 2 n7
+	buildI_b 0
+	push_a 2
+	build e_StdList_d!! 2 e_StdList_n!!
+	fillh _Cons 2 5
+	pop_a 3
+	pop_b 2
 .d 1 0
-	jmp s4
-else.6
-	pop_a 2
-	pushB FALSE
-.d 0 1 b
 	rtn
+else.2
+	pushI 1
+	push_b 1
+	addI
+	push_b 2
+	push_a 2
+	push_a 2
+	push_a 2
+	push_b 1
+	update_b 1 2
+	update_b 0 1
+	pop_b 1
+	update_a 2 5
+	update_a 1 4
+	updatepop_a 0 3
+	update_b 1 3
+	updatepop_b 0 2
+.d 4 2 ii
+	jmp s3
+else.1
+	fillh _Nil 0 3
+	pop_a 3
+	pop_b 2
+.d 1 0
+	rtn
+.nu 3 2 _ _
+.o 1 0
+n7
+	push_node_u _cycle_in_spine 3 2
+.o 4 2 ii
+ea7
+.o 4 2 ii
+s7
+	pushI 1
+	push_b 1
+	addI
+	push_b 2
+	push_a 2
+	push_a 2
+	push_a 2
+	push_b 1
+	update_b 1 2
+	update_b 0 1
+	pop_b 1
+	update_a 2 5
+	update_a 1 4
+	updatepop_a 0 3
+	update_b 1 3
+	updatepop_b 0 2
+.d 4 2 ii
+	jmp s3

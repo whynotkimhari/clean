@@ -3,8 +3,8 @@ module midterm1
 import StdEnv
 
 // Please fill the data required below.
-//<Name>
-//<Neptun_code>
+//<Name>	BUI NGUYEN KIM HAI
+//<Neptun_code>		QMIBHU
 //Functional Programming & mid-term
 //2021.September.14 
 //This solution was submitted and prepared by <Name, Neptun_code> for the mid-term assignment of the Functional Programming course.
@@ -23,7 +23,8 @@ import StdEnv
  the sum and the length of the sublist
 */
 
-//append :: [[Int]] -> [[Int]]
+append :: [[Int]] -> [[Int]]
+append list = map (\list = list ++ [sum list, length list]) list
 
 //Start = append [[1..5],[1..4],[],[5,6]]  // [[1,2,3,4,5,15,5],[1,2,3,4,10,4],[0,0],[5,6,11,2]]
 //Start = append [[(-1),(-2)..(-10)],[12],[5]]  // [[-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-55,10],[12,12,1],[5,5,1]]
@@ -33,7 +34,13 @@ import StdEnv
  
  Given a list of real numbers, keep only the fraction part of the number
 */
-//fraction :: [Real] -> [Real]
+f :: Real -> Real
+f x 
+| toReal (toInt x) > x = toReal (toInt x) - 1.0
+= toReal (toInt x)
+
+fraction :: [Real] -> [Real]
+fraction list = map (\x = x - f x) list
 
 //Start = fraction [1.2,1.5,0.6] //[0.2,0.5,0.6]
 //Start = fraction [1.25, 8.2115548896, 53.21,45.58,0.005] //[0.25,0.2115548896,0.21,0.58,0.00005]
@@ -46,7 +53,11 @@ import StdEnv
  less than 5 times in the list.
 */
 
-//famousNum :: [Int] -> [Int]
+count :: Int [Int] -> Int
+count x list = length (filter (\num = (num == x)) list)
+
+famousNum :: [Int] -> [Int]
+famousNum list = filter (\x = (count x list) >= 5) list
 
 //Start = famousNum [1,1,1,1,1,1,2,3,4,4,4,4,5,5,5,5,5] // [1,1,1,1,1,1,5,5,5,5,5]
 //Start = famousNum [] // []
@@ -62,8 +73,12 @@ import StdEnv
  while findPrev 5 [0, 10, 20, 30] returns -1.
 */
 
-//findPrev :: Int [Int] -> Int 
- 
+findPrev :: Int [Int] -> Int 
+findPrev x list 
+| list <> [] && x == hd list = -1
+| new_list <> list = last new_list
+= -1
+where new_list = (takeWhile ((<>)x) list)
 
 //Start = findPrev 5 [1,2,3,4,5,6] // 4
 //Start = findPrev 1 [1,2,3,4,5,6] // -1
@@ -80,7 +95,20 @@ import StdEnv
  And (U) the union of two lists is a list containing all the elements of A and B without duplicates 
 */
 
- 
+exist :: Int [Int] -> Bool
+exist x [] = False
+exist x [y:ys] 
+| x == y = True
+= exist x ys
+
+diff :: [Int] [Int] -> [Int]
+diff listA listB = [a \\ a <- listA | not (exist a listB)]
+
+merge :: [Int] [Int] -> [Int]
+merge listA listB = (diff listA listB) ++ listB
+
+symmetricDif :: [Int] [Int] -> [Int]
+symmetricDif listA listB = merge (diff listA listB) (diff listB listA)
 
 //Start = symmetricDif  [1,2,3,4,5] [2,4,6] //  [1,3,5,6]
 //Start = symmetricDif  [1..5] [1..10] // [6,7,8,9,10]
@@ -95,10 +123,11 @@ import StdEnv
  then compute the biquadrate of the numbers left in the list.
 */
 
-//notN :: Int [Int] -> [Int]
+notN :: Int [Int] -> [Int]
+notN x list = map (\x = x^4) (reverse (drop 1 (dropWhile ((<>)x) (reverse list))))
 
 //Start = notN 3 [1..5] // [1,16]
-//Start = notN [] // []
+//Start = notN 2 [] // []
 //Start = notN 6 [10,8..1] // [10000,4096]
 
 
@@ -111,7 +140,11 @@ import StdEnv
  otherwise return False
 */
 
-//gap2C :: [Int] -> Bool
+gap2C :: [Int] -> Bool
+gap2C list 
+| len <= 1 = False
+= foldr (&&) True [abs((list !! i) - (list !! j)) == 2 \\ i <- [0..(len - 2)] & j <- [1..(len - 1)]]
+where len = length list
 
 //Start = gap2C [1,3,5,7] // True
 //Start = gap2C [1,3,5,7,9,11,13,15] // True
@@ -133,25 +166,43 @@ import StdEnv
  Last list [3..6] has only one good number and is not a good list. Therefore, answer for this example is 2.
 */
 
-//goodLists :: [[Int]] [Int] -> Int
+/*
+exist :: Int [Int] -> Bool
+exist x [] = False
+exist x [y:ys] 
+| x == y = True
+= exist x ys
+*/
 
-// Start = goodLists [[1,2,3], [1..6], [3..6]] [1,2,3] // 2
-// Start = goodLists [[1], [1..6], [3,8,5]] [1,2,3,8] // 3
-// Start = goodLists [[], [3,2,5], [1,1,2,2]] [1] // 2
-// Start = goodLists [] [1,2,3] // 0
+// Using exist function I have declare above
 
+isGood :: [Int] [Int] -> Bool
+isGood listA listB = length (filter (\x = exist x listB) listA) >= (length listA) / 2
+
+goodLists :: [[Int]] [Int] -> Int
+goodLists lists goods = length (filter (\list = isGood list goods) lists)
+//Start = goodLists [[1,2,3], [1..6], [3..6]] [1,2,3] // 2
+//Start = goodLists [[1], [1..6], [3,8,5]] [1,2,3,8] // 3
+//Start = goodLists [[], [3,2,5], [1,1,2,2]] [1] // 2
+//Start = goodLists [] [1,2,3] // 0
 
 /*9. CoPrimes
  Given 2 numbers, check if they are co-prime.
  Numbers are called co-prime if they do not have
  common divisor.
 */
-//coPrimes :: Int Int -> Bool
+gcd :: Int Int -> Int
+gcd a b 
+| b == 0 = a
+= gcd b (a rem b)
 
-// Start = coPrimes 12 9 // False
-// Start = coPrimes 12 12 // False
-// Start = coPrimes 12 13 // True
-// Start = coPrimes 5 7 // True
+coPrimes :: Int Int -> Bool
+coPrimes a b = (gcd a b) == 1
+
+//Start = coPrimes 12 9 // False
+//Start = coPrimes 12 12 // False
+//Start = coPrimes 12 13 // True
+//Start = coPrimes 5 7 // True
 
 
 /* 10. Clean Sequence
@@ -161,17 +212,19 @@ import StdEnv
  s(2) = c
  and for every k greater than 2:
  s(k) = ( s(k-1)*s(k-2) + s(k-3) ) rem 1000
+ // s(k) = ( s(k-3)*s(k-2) + s(k-1) ) rem 1000 is true for answer!!!!!!!!!!!!!!!!!!!!!!
  
  Given n, a, b and c - generate first n numbers from Clean sequence.
 */
+do :: Int Int Int -> [Int]
+do a b c = [d : do b c d]
+where d = (a*b + c) rem 1000
 
-
-
-//clean :: Int Int Int Int -> [Int] 
-
-// Start = clean 5 1 2 3 // [1,2,3,5,11]
-// Start = clean 11 123 79 3 // [123,79,3,720,957,117,157,126,495,277,647]
-// Start = clean 2 1 2 3 // [1,2]
-// Start = clean 1 1 2 3 // [1]
+clean :: Int Int Int Int -> [Int] 
+clean n a b c = take n ([a,b,c] ++ (do a b c))
+//Start = clean 5 1 2 3 // [1,2,3,5,11]
+//Start = clean 11 123 79 3 // [123,79,3,720,957,117,157,126,495,277,647]
+//Start = clean 2 1 2 3 // [1,2]
+//Start = clean 1 1 2 3 // [1]
 
 

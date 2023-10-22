@@ -1,14 +1,14 @@
 Version: 1.5
 MainModule
-	Name:	idk1
+	Name:	midterm1
 	Dir:	{Project}
 	DclOpen:	False
 	Icl
 		WindowPosition
-			X:	10
+			X:	9
 			Y:	10
-			SizeX:	800
-			SizeY:	640
+			SizeX:	1484
+			SizeY:	712
 	IclOpen:	False
 OtherModules
 	Module
