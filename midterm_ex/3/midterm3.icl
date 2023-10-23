@@ -4,8 +4,8 @@ import StdEnv
 
 
 // Please fill the data required below.
-//<Name>
-//<Neptun_code>
+//<Name>			BUI NGUYEN KIM HAI
+//<Neptun_code>		QMIBHU
 //Functional Programming & mid-term
 //2021.September.14 
 //This solution was submitted and prepared by <Name, Neptun_code> 
@@ -31,7 +31,11 @@ import StdEnv
  Given a positive integer number and n, write a function to determine whether 
  it is a Parasitic number or not.
 */
-//parasitic :: Int Int -> Bool
+numToList :: Int -> [Int]
+numToList x = map (\x = x rem 10) ( takeWhile ((<>)0) ( iterate (\x = x / 10) x ) )
+
+parasitic :: Int Int -> Bool
+parasitic num n = sort (numToList num) == sort (numToList (num*n))
 
 //Start = parasitic 102564 4 // True
 //Start = parasitic 142857 5 // True
@@ -45,13 +49,14 @@ import StdEnv
  that contain at least two '1' digits. For example:
  [1,2,21,121,11,234131,111111,123,0,334] -> [121,11,234131,111111]
 */
-//doubleOne :: [Int] -> [Int]
+doubleOne :: [Int] -> [Int]
+doubleOne list = filter ( \num = length (filter (\x = x == 1) (numToList num)) > 1 ) list
 
-// Start = doubleOne [1,2,21,121,11,234131,111111,123,0,334] // [121,11,234131,111111]
-// Start = doubleOne [12,1,11,33] // [11]
-// Start = doubleOne [11,111,21] // [11,111]
-// Start = doubleOne [] // []
-// Start = doubleOne [21,3,1] // []
+//Start = doubleOne [1,2,21,121,11,234131,111111,123,0,334] // [121,11,234131,111111]
+//Start = doubleOne [12,1,11,33] // [11]
+//Start = doubleOne [11,111,21] // [11,111]
+//Start = doubleOne [] // []
+//Start = doubleOne [21,3,1] // []
 
 
 /* 3. Multiples
@@ -60,7 +65,8 @@ import StdEnv
  and so on n-th multiple of the number.
 */
 
-//multiple :: Int -> [Int]
+multiple :: Int -> [Int]
+multiple num = take (num - 1) (iterate ((+)num) num)
 
 //Start = multiple 5 // [10,15,20,25]
 //Start = multiple 2 // [2]
@@ -78,7 +84,17 @@ import StdEnv
  For example if L1=[1,2,3] and L2=[3,5], then L1-L2=[1,2].
 */
 
-//difference :: [[Int]] [[Int]] -> [[Int]] 
+doExist :: Int [Int] -> Bool
+doExist num [] = False
+doExist num [x:xs] 
+| num == x = True
+= doExist num xs
+
+diff :: [Int] [Int] -> [Int]
+diff listA listB = [a \\ a <- listA | not (doExist a listB)]
+
+difference :: [[Int]] [[Int]] -> [[Int]] 
+difference listsA listsB = [diff listA listB \\ listA <- listsA & listB <- listsB]
 
 //Start = difference [[1..5]] [[4..7]] // [[1,2,3]]
 //Start = difference [[1..10] , [10..15] , [1..4]] [[1..10] , [11..20] , [5]] // [[],[10],[1,2,3,4]]
@@ -91,7 +107,18 @@ import StdEnv
  the middle element with the given integer in every sublist. 
 */
 
-//repMid :: [[Int]] Int -> [[Int]]
+getFst :: [Int] -> [Int]
+getFst list = take (len / 2) list
+where len = length list
+
+getSnd :: [Int] -> [Int]
+getSnd list 
+| new_list == [] = []
+= tl new_list
+where new_list = drop ((length list)/2) list
+
+repMid :: [[Int]] Int -> [[Int]]
+repMid lists num = [getFst list ++ [num] ++ getSnd list \\ list <- lists]
 
 //Start = repMid [[1,2,3],[1..4]] 10 // [[1,10,3],[1,2,10,4]]
 //Start = repMid [[1..6], [9,8..1], [(-1),(-2)..(-10)]] 5 
@@ -104,7 +131,13 @@ import StdEnv
  Given a list of numbers, keep only the prime numbers that end with the digit 7
 */
 
-//primes7 :: [Int] -> [Int]
+isPrime :: Int -> Bool
+isPrime num 
+| num <= 1 = False
+= length ( filter (\x = num rem x == 0) [2..(num-1)] ) == 0
+
+primes7 :: [Int] -> [Int]
+primes7 list = [ num \\ num <- list | isPrime num && (num rem 10 == 7) ]
 
 //Start = primes7 [1..10] // [7]
 //Start = primes7 [1..100] // [7,17,37,47,67,97]
@@ -118,7 +151,9 @@ import StdEnv
  [(2,1),(2,3),(4,1)] = True
 */
 
-//holdsTrue :: [(Int, Int)] -> Bool
+holdsTrue :: [(Int, Int)] -> Bool
+holdsTrue [] = False
+holdsTrue list = foldr (&&) True ( map (\(fst,snd) = (fst rem 2 == 0) && (snd rem 2 == 1)) list )
 
 //Start = holdsTrue [(2,1),(2,3),(4,1)] // True
 //Start = holdsTrue [(1,3),(2,3),(3,4)] // False
@@ -144,7 +179,13 @@ import StdEnv
  of every number in the list.  
 */
 
-//super_digit :: [Int] -> [Int]
+super :: Int -> Int
+super num
+| num < 10 = num
+= super (sum (numToList num))
+
+super_digit :: [Int] -> [Int]
+super_digit list = [super num \\ num <- list]
 
 //Start = super_digit [148148148 , 9875 ] // [3,2]
 //Start = super_digit [884555 , 456 , 2351 , 21587 , 88 ] // [8,6,2,5,7]
@@ -156,7 +197,11 @@ import StdEnv
  which only contains the powers of the integer.
 */
 
-//powersList :: [Int] Int -> [Int]
+powers :: Int Int -> [Int]
+powers num x = [num^n \\ n <- [0..x]]
+
+powersList :: [Int] Int -> [Int]
+powersList list num = filter (\x = doExist x (powers num x)) list
 
 //Start = powersList [2,4,8,16,32,33,55] 2 // [2,4,8,16,32]
 //Start = powersList [] 3 // []
@@ -176,7 +221,9 @@ import StdEnv
  [(3,5),(5,7),(11,13),(17,19),(29,31),(41,43)].
 */
 
-//twinPrimes :: Int Int -> Int
+twinPrimes :: Int Int -> Int
+twinPrimes a b =  length ( [(num1, num2) \\ num1 <- listPrime, num2 <- listPrime | abs(num1 - num2) == 2 ] ) / 2
+where listPrime = filter isPrime [a..b]
 
 //Start = twinPrimes 1 50 // 6
 //Start = twinPrimes 1 1000 // 35

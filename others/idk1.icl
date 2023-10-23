@@ -17,10 +17,12 @@ splitList listA listB = [drop (n + 1) (take b listA) \\ b <- ([hd listB] ++ f li
 //Start = splitList [1..9] [3,2,4]
 	  
 convert :: 	[[Int]] -> [Int]
-convert lists = [ sum list / length list \\ list <- lists | isOK list]
+convert lists = [ sum list / len list \\ list <- lists | isOK list]
 where isOK [] = True
 	  isOK [x:xs] 
 			| x >= 0 = isOK xs
 			= False
+	  len [] = 1
+	  len list = length list
 	  
-Start = convert [[8,4,3],[9,0,-2],[0,1,9]]
+Start = convert [[-2],[],[]]

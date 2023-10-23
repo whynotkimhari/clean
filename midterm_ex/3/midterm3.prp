@@ -1,15 +1,15 @@
 Version: 1.5
 MainModule
-	Name:	idk1
+	Name:	midterm3
 	Dir:	{Project}
 	DclOpen:	False
 	Icl
 		WindowPosition
-			X:	95
-			Y:	56
-			SizeX:	800
-			SizeY:	640
-	IclOpen:	True
+			X:	10
+			Y:	10
+			SizeX:	1366
+			SizeY:	687
+	IclOpen:	False
 OtherModules
 	Module
 		Name:	StdArray
