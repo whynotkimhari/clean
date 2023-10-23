@@ -84,14 +84,8 @@ multiple num = take (num - 1) (iterate ((+)num) num)
  For example if L1=[1,2,3] and L2=[3,5], then L1-L2=[1,2].
 */
 
-doExist :: Int [Int] -> Bool
-doExist num [] = False
-doExist num [x:xs] 
-| num == x = True
-= doExist num xs
-
 diff :: [Int] [Int] -> [Int]
-diff listA listB = [a \\ a <- listA | not (doExist a listB)]
+diff listA listB = [a \\ a <- listA | not (isMember a listB)]
 
 difference :: [[Int]] [[Int]] -> [[Int]] 
 difference listsA listsB = [diff listA listB \\ listA <- listsA & listB <- listsB]
@@ -201,7 +195,7 @@ powers :: Int Int -> [Int]
 powers num x = [num^n \\ n <- [0..x]]
 
 powersList :: [Int] Int -> [Int]
-powersList list num = filter (\x = doExist x (powers num x)) list
+powersList list num = filter (\x = isMember x (powers num x)) list
 
 //Start = powersList [2,4,8,16,32,33,55] 2 // [2,4,8,16,32]
 //Start = powersList [] 3 // []
