@@ -54,6 +54,22 @@ Make sure that you comment all 'Start'-s before submitting the code.
 -- of the student from the University.
 */
 
+numToList :: Int -> [Int]
+numToList num = reverse (map (\x = x rem 10) list)
+where list = takeWhile ((<>)0) (iterate (\x = x / 10) num)
+
+removeDuplicates :: [Int] -> [Int]
+removeDuplicates input_list = f input_list []
+where f [] list = []
+	  f [x:xs] list 
+	  | isMember x list = f xs list
+	  = [x] ++ f xs (list ++ [x])
+	  
+max :: [Int] -> Int
+max [x] = x
+max [x:xs]
+| x > max xs = x
+= max xs
 
 //// Disarium number
 /*1.
@@ -65,8 +81,9 @@ is equal to the original number.
 Example: 135 is a Disarium number, 1^1+3^2+5^3 = 135.
 */
 
-//isDisariumNum :: Int -> Bool
-
+isDisariumNum :: Int -> Bool
+isDisariumNum num = sum [digit^power \\ digit <- list & power <- [1..length(list)] ] == num
+where list = numToList num
 
 //Start = isDisariumNum 135 // True
 //Start = isDisariumNum 598 // True
@@ -86,8 +103,9 @@ Examples:
 171 True, the sum of digits is 1+7+1=9 and 171 is divisible by 9.
 */
 
-//harshadNums :: [Int] -> [Int]
-
+harshadNums :: [Int] -> [Int]
+harshadNums list = filter (\num = num rem (sum (numToList num)) == 0) new_list
+where new_list = removeDuplicates list
 
 //Start = harshadNums ([8, 9, 10, 12, 18, 20, 21, 24, 27, 30] ++ [13..17]) // [8, 9, 10, 12, 18, 20, 21, 24, 27, 30]
 //Start = harshadNums ([31..35] ++ [36, 17,40, 42, 45, 13, 48, 50, 54, 11, 60, 63]) // [36, 40, 42, 45, 48, 50, 54, 60, 63]
@@ -105,8 +123,9 @@ Example: [10,9,14,23,15,0,9] -> [23,15,9]
 9 there are no numbers in its right.
 */
 
-//leaders :: [Int] -> [Int]
-
+leaders :: [Int] -> [Int]
+leaders list = map (\(num,id) = num) (filter (\(num,id) = num >= max (drop id list)) new_list)
+where new_list = zip (list, [0..((length list) - 1)])
 
 //Start = leaders [10,9,14,23,15,0,9] // [23,15,9]
 //Start = leaders [1..10] // [10]
@@ -124,7 +143,8 @@ Example: [1,3,8,6,2], K=3 -> [1,2,2]
 1,8,2 are replaced with 1, 2, 2 reminders.
 */
 
-//filteredRem :: Int [Int] -> [Int]
+filteredRem :: Int [Int] -> [Int]
+filteredRem k list = filter (\num = num <> 0) (map (\num = num rem k) list)
 
 //Start = filteredRem 3 [1,3,8,6,2] // [1,2,2]
 //Start = filteredRem 5 [5,10,30] // []
@@ -139,8 +159,8 @@ counts how many numbers are:
 greater or equal to 10 AND less or equal to 99 AND divisible by 3.
 */
 
-//countGoodNums :: [Int] -> Int
-
+countGoodNums :: [Int] -> Int
+countGoodNums list = length (filter (\num = num >= 10 && num <= 99 && num rem 3 == 0) list)
 
 //Start = countGoodNums [1,12,10,99] // 2
 //Start = countGoodNums [12,15,30,33,39,96,99] // 7
@@ -159,9 +179,8 @@ sum is greater than the remaining 3rd number.
 A number cannot be a side if it is negative or 0.
 */
 
-
-//validTriangles :: [(Int,Int,Int)] -> [Bool]
-
+validTriangles :: [(Int,Int,Int)] -> [Bool]
+validTriangles listTuples = map (\(a,b,c) = (a + b > c) && (a + c > b) && (b + c > a)) listTuples
 
 //Start = validTriangles [] // []
 //Start = validTriangles [(3,3,3), (2,4,5), (4,2,5), (3,3,10)] // [True, True, True, False]
@@ -178,8 +197,8 @@ Example: the tuple ("ab", 3) should be replaced with ["ab","ab","ab"].
 
 */
 
-//stringCopy :: [(String,Int)] -> [[String]]
-
+stringCopy :: [(String,Int)] -> [[String]]
+stringCopy listTuples = map (\(str,time) = take time (repeat str)) listTuples
 
 //Start = stringCopy [("X",3),("AA",2)] // [["X","X","X"],["AA","AA"]]
 //Start = stringCopy [("Clean", 1),("?!",0),("Empty",-1)] // [["Clean"],[],[]]
@@ -195,8 +214,13 @@ Example: 123 321 -> 132231
 13 13 -> 1133
 */
 
-//intInsertion :: Int Int -> Int
+merge :: [Int] [Int] -> String
+merge list1 list2 = foldr (+++) "" [(toString a) +++ (toString b) \\ a <- list1 & b <- list2]
 
+intInsertion :: Int Int -> Int
+intInsertion num1 num2 = toInt (merge list1 list2)
+where list1 = numToList num1 
+	  list2 = numToList num2
 
 //Start = intInsertion 123 123 // 112233
 //Start = intInsertion 123 321 // 132231
@@ -219,8 +243,8 @@ Output: ([("Ramesh",23)],[("Vivek",40), ("Harsh",88), ("Mohammad",60)])
 'Ramesh' failed as his marks 23 are less than the given number 30, all others passed.
 */
 
-//group_by_marks :: [(String, Int)] Int -> ([(String,Int)], [(String,Int)])
-
+group_by_marks :: [(String, Int)] Int -> ([(String,Int)], [(String,Int)])
+group_by_marks list pass = (filter (\(name,mark) = mark < pass) list, filter (\(name,mark) = mark >= pass) list)
 
 //Start = group_by_marks [("Ramesh",23), ("Vivek",40), ("Harsh",88), ("Mohammad",60)] 30
 // ([("Ramesh",23)],[("Vivek",40),("Harsh",88),("Mohammad",60)])
@@ -242,8 +266,9 @@ For the input ['m', 'o', 'h', 'i','d','o'] count of vowels is 3 o,i,o.
 Cipher of the list: ['m', 'o', 'h', 'i','d','o']->['p','r','k','l','g','r'].
 */
 
-//cipherList :: [Char] -> [Char]
-
+cipherList :: [Char] -> [Char]
+cipherList list = map (\c = toChar (toInt c + vowels) ) list
+where vowels = length (filter (\c = c == 'a' || c == 'e' || c == 'o' || c  == 'u' || c == 'i') list)
 
 //Start = cipherList ['m', 'o', 'h', 'i','d','o'] // ['p','r','k','l','g','r']
 //Start = cipherList ['t', 'a', 'r', 'i', 'q'] // ['v','c','t','k','s']
@@ -262,8 +287,11 @@ destination point: (26,12)
 output: True (2, 10)->(2, 12)->(14, 12)->(26, 12) is a valid path.
 */
 
-//isReachable :: (Int,Int) (Int,Int) -> Bool
-
+isReachable :: (Int,Int) (Int,Int) -> Bool
+isReachable (x1,y1) (x2,y2) 
+| x1 > x2 || y1 > y2 = False
+| x1 == x2 && y1 == y2 = True
+= isReachable (x1+y1,y1) (x2, y2) || isReachable (x1,x1+y1) (x2,y2)
 
 //Start = isReachable (2, 10) (26, 12) // True
 //Start = isReachable (4, 20) (52, 24) // True
@@ -284,8 +312,8 @@ List: [2,3,-5,1], the polynomial is 2x^0 + 3x^1 - 5x^2 + 1x^3.
 Given value is 1: 2 + (3 * 1) + (-5 * 1^2) + (1 * 1^3) = 1.
 */
 
-//evaluate :: [Int] Int -> Int
-
+evaluate :: [Int] Int -> Int
+evaluate coefs val = sum [coef * (val^deg) \\ coef <- coefs & deg <- [0..(length coefs - 1)] ] 
 
 //Start = evaluate [2,3,-5,1] 1 // 1
 //Start = evaluate [1,-5,2,-8] -2 // 83
@@ -304,8 +332,10 @@ The digit 3 exists in the init number, and it has to be moved 4 places
 in order to get the target number.
 */
 
-//Mover :: Int Int Int -> Int
-
+Mover :: Int Int Int -> Int
+Mover init digit target = length (takeWhile ((<>)digit) targetList) - length (takeWhile ((<>)digit) initList)
+where initList = numToList init
+      targetList = numToList target
 
 //Start = Mover 123 2 132 // 1
 //Start = Mover 134442 3 144423 // 4
