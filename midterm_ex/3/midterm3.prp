@@ -7,9 +7,9 @@ MainModule
 		WindowPosition
 			X:	10
 			Y:	10
-			SizeX:	1055
-			SizeY:	640
-	IclOpen:	False
+			SizeX:	1413
+			SizeY:	697
+	IclOpen:	True
 OtherModules
 	Module
 		Name:	StdArray

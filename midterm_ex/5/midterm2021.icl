@@ -133,15 +133,10 @@ factor_prime num val
 | num <= 1 = []
 | num rem val == 0 && isPrime val = [val] ++ (factor_prime (num / val) val)
 = factor_prime num (val+1)
-	  
-removeDuplicatesInt :: [Int] [Int] -> [Int]
-removeDuplicatesInt [] set = []
-removeDuplicatesInt [x:xs] set
-| isMember x set = removeDuplicatesInt xs set
-= [x] ++ removeDuplicatesInt xs (set ++ [x])
 
+// removeDup is built-in function
 primeFactors :: Int -> [Int]
-primeFactors num = removeDuplicatesInt (factor_prime num 2) []
+primeFactors num = removeDup (factor_prime num 2)
 
 //Start = primeFactors 0 // []
 //Start = primeFactors 1 // []
@@ -156,10 +151,7 @@ primeFactors num = removeDuplicatesInt (factor_prime num 2) []
 // Example: m = 10: r = 1,3,7,9; thus phi(m) = 4. Note the special case: phi(1) = 1.
 // Two integers a and b are coprime, if the only positive integer that divides (is a divisor of) both of them is 1.
 
-gcd :: Int Int -> Int
-gcd a b 
-| b == 0 = a
-= gcd b (a rem b)
+// gcd is built-in function
 
 phi :: Int -> Int
 phi m 
@@ -176,14 +168,10 @@ phi m
 // 8. Determine the prime factors of a given positive integer.
 // Construct a list containing the prime factors and their multiplicities.
 
-removeDuplicatesTuple :: [(Int,Int)] [(Int,Int)] -> [(Int,Int)]
-removeDuplicatesTuple [] set = []
-removeDuplicatesTuple [x:xs] set
-| isMember x set = removeDuplicatesTuple xs set
-= [x] ++ removeDuplicatesTuple xs (set ++ [x])
+// removeDup is built-in function
 
 prime_factors_mult :: Int -> [(Int, Int)]
-prime_factors_mult num = removeDuplicatesTuple (map (\x = (x, length (filter (\y = y == x) list))) list) []
+prime_factors_mult num = removeDup (map (\x = (x, length (filter (\y = y == x) list))) list)
 where list = factor_prime num 2
 
 //Start = prime_factors_mult 4 // [(2,2)]

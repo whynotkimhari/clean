@@ -22,7 +22,7 @@
 .depend "StdOverloaded" "20230927194349"
 .depend "StdBool" "20230927194350"
 .depend "StdEnv" "20230927194350"
-.module m_midterm2 "midterm2" "20231022235611"
+.module m_midterm2 "midterm2" "20231026233930"
 .endinfo
 .impmod _system
 .implab _cycle_in_spine
@@ -59,61 +59,42 @@
 .impdesc d_S.6
 .implab n_S.6 ea_S.6
 .implab _driver
+.impmod _SystemEnum
+.implab e__SystemEnum_s_from_to;6
 .impmod StdList
-.impdesc e_StdList_d!!
-.implab e_StdList_n!! _
-.implab e_StdList_smap
+.implab e_StdList_sfilter
 .implab e_StdList_slength;47
 .impmod StdInt
-.implab e_StdInt_s+;6
 .implab e_StdInt_s-;7
-.implab e_StdInt_sone;11
-.implab e_StdInt_s<;17
+.implab e_StdInt_s==;16
+.implab e_StdInt_srem;28
 .impmod StdBool
 .implab e_StdBool_snot
 .export __midterm2_Start
 .o 0 0
 __midterm2_Start
-	build _ 0 n2
+	build _ 0 n3
 .d 1 0
 	jmp _driver
-.n 0 _ ea2
+.n 0 _ ea3
 .o 1 0
-n2
+n3
 	push_node _cycle_in_spine 0
 .o 1 0
-ea2
+ea3
 .o 1 0
-s2
-	buildh _Nil 0
-	buildh _Nil 0
-	buildI 9
-	buildh _Cons 2
-	buildI 8
-	buildh _Cons 2
-	buildI 7
-	buildh _Cons 2
-	buildI 6
-	buildh _Cons 2
-	buildI 5
-	buildh _Cons 2
-	buildI 4
-	buildh _Cons 2
-	buildI 3
-	buildh _Cons 2
-	buildI 2
-	buildh _Cons 2
-	buildI 1
-	buildh _Cons 2
-	buildI 7
-	buildI 4
-	buildh _Tuple 3
-	buildh _Cons 2
+s3
+	create
+	pushI 10
+	pushI 1
+.d 1 2 ii
+	jsr e__SystemEnum_s_from_to;6
+.o 1 0
 .d 2 0
-	jmp s1
+	jmp s2
 .o 2 0
-s1
-	buildh d4 0
+s2
+	buildh d1 0
 	push_a 1
 	push_a 1
 	update_a 1 2
@@ -122,129 +103,98 @@ s1
 	update_a 1 2
 	updatepop_a 0 1
 .d 3 0
-	jmp e_StdList_smap
-.desc d4 _hnf l4 1 0 "<lambda>[line:218];32;32"
+	jmp e_StdList_sfilter
+.desc d1 _hnf l1 1 0 "isNotPrime"
 .o 2 0
-l4
-	update_a 1 0
+l1
+	pop_a 1
+.d 1 0
+	jsr ea1
+.o 0 1 b
+	buildB_b 0
+	pop_b 1
+.d 1 0
+	rtn
+.o 1 0
+ea1
+	jsr_eval 0
+	pushI_a 0
+	pop_a 1
+.o 0 1 i
+s1
+	pushI 1
+	push_b 1
+	eqI
+	jmp_false else.1
+	pop_b 1
+	pushB TRUE
+.d 0 1 b
+	rtn
+else.1
+	pushI 1
+	push_b 1
+	subI
 	create
+	pushI 2
+.d 1 2 ii
+	jsr e__SystemEnum_s_from_to;6
+.o 1 0
+	buildI_b 0
+	buildh d4 1
+	create
+	push_a 2
+	update_a 1 3
+	update_a 2 1
 	update_a 0 2
 	pop_a 1
-.o 2 0
-ea4
-	jsr_eval 0
-	repl_args 3 3
-	jsr_eval 2
-.o 4 0
-s4
-	push_a 2
+	pop_b 1
+.d 3 0
+	jsr e_StdList_sfilter
+.o 1 0
 .d 1 0
 	jsr e_StdList_slength;47
 .o 0 1 i
-	pushI 1
-	push_b 1
-	update_b 1 2
-	update_b 0 1
-	pop_b 1
-	subI
 	pushI 0
-	push_a 1
-	push_a 1
-	push_a 4
-	update_a 2 5
-	update_a 1 4
-	updatepop_a 0 3
-.d 4 2 ii
-	jmp s3
-.o 4 2 ii
-s3
-	push_b 0
-	push_b 2
-	ltI
-	notB
-	jmp_false else.1
-	push_a 1
-	jsr_eval 0
-	pushI_a 2
-	pop_a 1
-	push_b 1
-	ltI
-	notB
-	jmp_false else.2
-	push_a 2
-	jsr_eval 0
-	pushI_a 3
-	pop_a 1
-	push_b 1
 	push_b 1
 	update_b 1 2
 	update_b 0 1
 	pop_b 1
-	ltI
+	eqI
 	notB
-	jmp_false else.2
-	push_b 1
-	push_b 1
-	push_a 2
-	push_a 2
-	push_a 2
-	build_u _ 3 2 n7
-	buildI_b 0
-	push_a 2
-	build e_StdList_d!! 2 e_StdList_n!!
-	fillh _Cons 2 5
-	pop_a 3
-	pop_b 2
+.d 0 1 b
+	rtn
+.desc d4 _hnf l4 2 0 "<lambda>[line:110];18;25"
+.a 0 a4
+.o 2 0
+l4
+	repl_args 1 1
+.o 2 0
+a4
+.d 2 0
+	jsr ea4
+.o 0 1 b
+	buildB_b 0
+	pop_b 1
 .d 1 0
 	rtn
-else.2
-	pushI 1
+.o 2 0
+ea4
+	jsr_eval 1
+	pushI_a 1
+	pushI_a 0
+	pop_a 2
+.o 0 2 ii
+s4
 	push_b 1
-	addI
-	push_b 2
-	push_a 2
-	push_a 2
-	push_a 2
+	push_b 1
+	remI
+	pushI 0
 	push_b 1
 	update_b 1 2
 	update_b 0 1
 	pop_b 1
-	update_a 2 5
-	update_a 1 4
-	updatepop_a 0 3
 	update_b 1 3
 	updatepop_b 0 2
-.d 4 2 ii
-	jmp s3
-else.1
-	fillh _Nil 0 3
-	pop_a 3
-	pop_b 2
-.d 1 0
+	eqI
+.d 0 1 b
 	rtn
-.nu 3 2 _ _
-.o 1 0
-n7
-	push_node_u _cycle_in_spine 3 2
-.o 4 2 ii
-ea7
-.o 4 2 ii
-s7
-	pushI 1
-	push_b 1
-	addI
-	push_b 2
-	push_a 2
-	push_a 2
-	push_a 2
-	push_b 1
-	update_b 1 2
-	update_b 0 1
-	pop_b 1
-	update_a 2 5
-	update_a 1 4
-	updatepop_a 0 3
-	update_b 1 3
-	updatepop_b 0 2
-.d 4 2 ii
-	jmp s3

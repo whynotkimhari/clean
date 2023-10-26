@@ -57,13 +57,6 @@ Make sure that you comment all 'Start'-s before submitting the code.
 numToList :: Int -> [Int]
 numToList num = reverse (map (\x = x rem 10) list)
 where list = takeWhile ((<>)0) (iterate (\x = x / 10) num)
-
-removeDuplicates :: [Int] -> [Int]
-removeDuplicates input_list = f input_list []
-where f [] list = []
-	  f [x:xs] list 
-	  | isMember x list = f xs list
-	  = [x] ++ f xs (list ++ [x])
 	  
 max :: [Int] -> Int
 max [x] = x
@@ -102,10 +95,10 @@ Examples:
 200 True, the sum of digits is 2+0+0=2 and 200 is divisible by 2.
 171 True, the sum of digits is 1+7+1=9 and 171 is divisible by 9.
 */
-
+// removeDup is built-in function
 harshadNums :: [Int] -> [Int]
 harshadNums list = filter (\num = num rem (sum (numToList num)) == 0) new_list
-where new_list = removeDuplicates list
+where new_list = removeDup list
 
 //Start = harshadNums ([8, 9, 10, 12, 18, 20, 21, 24, 27, 30] ++ [13..17]) // [8, 9, 10, 12, 18, 20, 21, 24, 27, 30]
 //Start = harshadNums ([31..35] ++ [36, 17,40, 42, 45, 13, 48, 50, 54, 11, 60, 63]) // [36, 40, 42, 45, 48, 50, 54, 60, 63]
@@ -214,11 +207,11 @@ Example: 123 321 -> 132231
 13 13 -> 1133
 */
 
-merge :: [Int] [Int] -> String
-merge list1 list2 = foldr (+++) "" [(toString a) +++ (toString b) \\ a <- list1 & b <- list2]
+concat :: [Int] [Int] -> String
+concat list1 list2 = foldr (+++) "" [(toString a) +++ (toString b) \\ a <- list1 & b <- list2]
 
 intInsertion :: Int Int -> Int
-intInsertion num1 num2 = toInt (merge list1 list2)
+intInsertion num1 num2 = toInt (concat list1 list2)
 where list1 = numToList num1 
 	  list2 = numToList num2
 

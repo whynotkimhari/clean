@@ -7,8 +7,8 @@ MainModule
 		WindowPosition
 			X:	10
 			Y:	10
-			SizeX:	1487
-			SizeY:	701
+			SizeX:	1493
+			SizeY:	707
 	IclOpen:	True
 OtherModules
 	Module
