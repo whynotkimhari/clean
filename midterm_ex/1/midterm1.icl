@@ -95,20 +95,14 @@ where new_list = (takeWhile ((<>)x) list)
  And (U) the union of two lists is a list containing all the elements of A and B without duplicates 
 */
 
-exist :: Int [Int] -> Bool
-exist x [] = False
-exist x [y:ys] 
-| x == y = True
-= exist x ys
-
 diff :: [Int] [Int] -> [Int]
-diff listA listB = [a \\ a <- listA | not (exist a listB)]
+diff listA listB = [a \\ a <- listA | not (isMember a listB)]
 
-merge :: [Int] [Int] -> [Int]
-merge listA listB = (diff listA listB) ++ listB
+concat :: [Int] [Int] -> [Int]
+concat listA listB = (diff listA listB) ++ listB
 
 symmetricDif :: [Int] [Int] -> [Int]
-symmetricDif listA listB = merge (diff listA listB) (diff listB listA)
+symmetricDif listA listB = concat (diff listA listB) (diff listB listA)
 
 //Start = symmetricDif  [1,2,3,4,5] [2,4,6] //  [1,3,5,6]
 //Start = symmetricDif  [1..5] [1..10] // [6,7,8,9,10]
@@ -166,18 +160,8 @@ where len = length list
  Last list [3..6] has only one good number and is not a good list. Therefore, answer for this example is 2.
 */
 
-/*
-exist :: Int [Int] -> Bool
-exist x [] = False
-exist x [y:ys] 
-| x == y = True
-= exist x ys
-*/
-
-// Using exist function I have declare above
-
 isGood :: [Int] [Int] -> Bool
-isGood listA listB = length (filter (\x = exist x listB) listA) >= (length listA) / 2
+isGood listA listB = length (filter (\x = isMember x listB) listA) >= (length listA) / 2
 
 goodLists :: [[Int]] [Int] -> Int
 goodLists lists goods = length (filter (\list = isGood list goods) lists)
@@ -191,11 +175,7 @@ goodLists lists goods = length (filter (\list = isGood list goods) lists)
  Numbers are called co-prime if they do not have
  common divisor.
 */
-gcd :: Int Int -> Int
-gcd a b 
-| b == 0 = a
-= gcd b (a rem b)
-
+// gcd is built-in function
 coPrimes :: Int Int -> Bool
 coPrimes a b = (gcd a b) == 1
 
