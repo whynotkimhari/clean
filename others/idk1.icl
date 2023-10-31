@@ -25,4 +25,5 @@ where isOK [] = True
 	  len [] = 1
 	  len list = length list
 	  
-Start = convert [[-2],[],[]]
+//Start = convert [[-2],[],[]]
+Start = toInt 'a'
