@@ -26,4 +26,9 @@ where isOK [] = True
 	  len list = length list
 	  
 //Start = convert [[-2],[],[]]
-Start = toInt 'a'
+//Start = toInt 'a'
+
+traverseMatrix :: [[Int]] -> [(Int,Int,Int)]
+traverseMatrix lists = flatten [[(a,i,j) \\ a <- list & j <- [0..] | a rem 2 == 0] \\ list <- lists & i <- [0..]]
+
+Start = traverseMatrix [[1,2,3],[1,2,3],[1,2,3]]
