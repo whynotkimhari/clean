@@ -12,14 +12,19 @@ import StdEnv
  * Note: it is guranteed that a number of switches in the start numbere will result in the target number 
 */
 
+toList :: Int -> [Int]
+toList num = reverse (map (\x = x rem 10) (takeWhile ((<>)0) (iterate (\x = x/10) num)))
 
-// Switcher :: Int Int -> Int 
+
+Switcher :: Int Int -> Int 
+Switcher num1 num2 = sum [1 \\ x <- list1 & y <- list2 | x <> y] / 2
+where list1 = toList num1
+  	  list2 = toList num2
 
 
-
-// Start = Switcher 12132 21123 // 2
-// Start = Switcher 99428123 98439122 // 2
-// Start = Switcher 11112111 12111111 // 1
+//Start = Switcher 12132 21123 // 2
+//Start = Switcher 99428123 98439122 // 2
+//Start = Switcher 11112111 12111111 // 1
 
 
 
@@ -29,8 +34,18 @@ import StdEnv
  * e.g: truckParker 10 [2,4,6,9,10] -> 1
  * The truck can only park between 6 and 9 at position 7
 */
-// truckParker :: Int [Int] -> Int
+diff :: [Int] [Int] -> [Int]
+diff xs ys = [x \\ x <- xs | not (isMember x ys) ]
 
+cnt :: [Int] -> Int
+cnt [] = 0
+cnt [x] = 0
+cnt [x,y:xs] 
+| x + 1 == y = 1 + cnt xs
+= cnt [y:xs]
+
+truckParker :: Int [Int] -> Int
+truckParker size list = cnt (diff [1..size] list)
 
 //Start = truckParker 10 [2,4,6,9,10]   //  1
 //Start = truckParker 100 [1,4..100] //  33
@@ -44,8 +59,8 @@ import StdEnv
  * and then use the operator to find the value of the tuple
 */
 
-// tripCalc :: [(String, (Int Int -> Int), String)] -> [Int]
-
+tripCalc :: [(String, (Int Int -> Int), String)] -> [Int]
+tripCalc list = [op (toInt first) (toInt second) \\(first, op, second) <- list]
 
 //Start = tripCalc [("100", +, "45"),("153", *, "445") ] // [145,68085]
 //Start = tripCalc [("100", -, "45"),("153", /, "445") ] //  [55,0]
@@ -58,13 +73,15 @@ import StdEnv
  * if all of the digits are removed from the number, return 0
 */
 
-// digRemover :: (Int,[Int]) -> Int
+convert :: [Int] -> Int
+convert [] = 0
+convert [x:xs] = x * (10^(length xs)) + convert xs
 
+digRemover :: (Int,[Int]) -> Int
+digRemover (num,list) = convert (diff (toList num) list)
 //Start = digRemover (15424, [1,2,4]) // 5
 //Start = digRemover (10, [1,0]) // 0
 //Start = digRemover (8542, [2]) // 854
-
-
 
 /* Props
  * Given a list of lists of tuples containing integers.
@@ -77,8 +94,8 @@ import StdEnv
  * [(5,2),(3,4)] -> [1] 
 */
 
-// Props :: [[(Int,Int)]] -> [Int]
-
+Props :: [[(Int,Int)]] -> [Int]
+Props lists = [sum [1 \\ (x,y) <- list | x >= y] \\ list <- lists]
 //Start = Props [[(1,2), (2,2), (3,2)], [], [(5,2), (3,4)]] // [2,0,1]
 //Start = Props [[(5,3), (2,1122), (3123,21)], [(1,-123), (0,0)], [(5,2), (3222,4)], [(5,2), (3,4)]] // [2,2,2,1]
 //Start = Props [[(1,2), (2,2), (1,2)], [(2,2), (3,4)]] // [1,1]
@@ -103,8 +120,8 @@ import StdEnv
  * Note: position starts from 1 in this task.
 */
 
-// matchIndex :: [[Int]] (Int -> Bool) -> Bool 
-
+matchIndex :: [[Int]] (Int -> Bool) -> Bool 
+matchIndex lists f = foldr (&&) True [f (sum list) == f i \\ list <- lists & i <- [1..]]
 
 
 //Start = matchIndex [[6,2,1], [2,4]] isEven // True
@@ -124,7 +141,9 @@ import StdEnv
  * Note: if there is no even sums, return -1
 */
 
-// evenConds:: [[Int]] -> Int
+evenConds:: [[Int]] -> Int
+evenConds [] = 0
+evenConds lists = maxList [sum list \\ list <- lists | (sum list) rem 2 == 0]
 
 //Start = evenConds [[3,3,3],[],[10,5,1],[15,2]] //16
 //Start = evenConds [[1,1], [9,9], [100,1]] //18
@@ -143,8 +162,8 @@ import StdEnv
  * Note: If there are no palindroms, return 1
 */
 
-// prodPali :: [[a]] -> a | * a & one a & Eq a
-
+prodPali :: [[a]] -> a | * a & one a & Eq a
+prodPali lists = prod [prod list \\ list <- lists | list == reverse list]
 //Start = prodPali [[1,2,1], [4,5], [1,2,3,2,1]] //24
 //Start = prodPali [[1.0,11.0,2.0], [], [10.1,10.1]] // 102.01
 //Start = prodPali [[1,3]] // 1
@@ -161,8 +180,8 @@ import StdEnv
 
 
 
-// BTavg :: [[Int]] Int -> [[Int]]
-
+BTavg :: [[Int]] Int -> [[Int]]
+BTavg lists num = [list \\ list <- lists | maxList list - (sum list) / (length list) >= num]
 //Start = BTavg [[1,2,4], [1,2]] 2 // [[1,2,4]]
 //Start = BTavg [[1]] 1 // []
 //Start = BTavg [[1..10], [20..30], [1..100]] 10 // [[1..100]]
