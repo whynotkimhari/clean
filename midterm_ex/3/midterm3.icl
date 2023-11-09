@@ -50,7 +50,7 @@ parasitic num n = sort (numToList num) == sort (numToList (num*n))
  [1,2,21,121,11,234131,111111,123,0,334] -> [121,11,234131,111111]
 */
 doubleOne :: [Int] -> [Int]
-doubleOne list = filter ( \num = length (filter (\x = x == 1) (numToList num)) > 1 ) list
+doubleOne list = filter ( \num = length (filter ((==)1) (numToList num)) > 1 ) list
 
 //Start = doubleOne [1,2,21,121,11,234131,111111,123,0,334] // [121,11,234131,111111]
 //Start = doubleOne [12,1,11,33] // [11]
@@ -128,7 +128,7 @@ repMid lists num = [getFst list ++ [num] ++ getSnd list \\ list <- lists]
 isPrime :: Int -> Bool
 isPrime num 
 | num <= 1 = False
-= length ( filter (\x = num rem x == 0) [2..(num-1)] ) == 0
+= length ( filter (\x = num rem x == 0) [1..num] ) == [1,num]
 
 primes7 :: [Int] -> [Int]
 primes7 list = [ num \\ num <- list | isPrime num && (num rem 10 == 7) ]

@@ -64,7 +64,7 @@ where list = [(reverse [1..base]) ++ [1..base] \\ base <- [1..n]]
 // Note: position starts from 1 in this task.
 
 matchIndex :: [[a]] (Int -> b) -> Bool | == b
-matchIndex lists f = foldr (&&) True [f (length list) == f id \\ list <- lists & id <- [1..(length lists)] ]
+matchIndex lists f = and [f (length list) == f id \\ list <- lists & id <- [1..] ]
 
 //Start = matchIndex [[1,2,1], [1,4]] isEven // True
 //Start = matchIndex [[1,2,1], [1,4]] (\x = x+1) // False
@@ -171,7 +171,7 @@ phi m
 // removeDup is built-in function
 
 prime_factors_mult :: Int -> [(Int, Int)]
-prime_factors_mult num = removeDup (map (\x = (x, length (filter (\y = y == x) list))) list)
+prime_factors_mult num = removeDup (map (\x = (x, length (filter ((==)x) list))) list)
 where list = factor_prime num 2
 
 //Start = prime_factors_mult 4 // [(2,2)]

@@ -76,10 +76,10 @@ findPrev :: Int [Int] -> Int
 findPrev x ls 
 | isEmpty list = -1
 = last list
-where list =  (takeWhile (\c = c  <> x) ls) 
+where list =  (takeWhile ((<>)x) ls) 
  
-// Start = findPrev 5 [1,2,3,4,5,6] // 4
-// Start = findPrev 1 [1,2,3,4,5,6] // -1
+//Start = findPrev 5 [1,2,3,4,5,6] // 4
+//Start = findPrev 1 [1,2,3,4,5,6] // -1
 //Start = findPrev 1 [] // -1 
 
  
@@ -139,11 +139,6 @@ gap2C [x,y:xs]
 // Start = gap2C [1,3,5,7,9,11,13,15] // True
 // Start = gap2C [1,5,8] // False
 //Start = gap2C [] // False
-
-
-
-
-
 
 count :: Int [Int] -> Int
 count x ls = length (filter (\n = n == x) ls)

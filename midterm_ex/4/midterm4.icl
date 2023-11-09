@@ -2,7 +2,7 @@ module midterm4
 
 import StdEnv
 /* Instructions
-You are given 13 exercises each of 10 points. Min 5 perfect solutions (50 points) is required for passed, max is 100 points, you can choose which ones to solve.
+You are given 13 exercises each of 10 points. Min 5 perfect solutions (50 points) is required for passed,  is 100 points, you can choose which ones to solve.
 
 Find on local C: drive the Clean compiler.
 
@@ -75,7 +75,7 @@ Example: 135 is a Disarium number, 1^1+3^2+5^3 = 135.
 */
 
 isDisariumNum :: Int -> Bool
-isDisariumNum num = sum [digit^power \\ digit <- list & power <- [1..length(list)] ] == num
+isDisariumNum num = sum [digit^power \\ digit <- list & power <- [1..] ] == num
 where list = numToList num
 
 //Start = isDisariumNum 135 // True
@@ -137,7 +137,7 @@ Example: [1,3,8,6,2], K=3 -> [1,2,2]
 */
 
 filteredRem :: Int [Int] -> [Int]
-filteredRem k list = filter (\num = num <> 0) (map (\num = num rem k) list)
+filteredRem k list = filter ((<>)0) (map (\num = num rem k) list)
 
 //Start = filteredRem 3 [1,3,8,6,2] // [1,2,2]
 //Start = filteredRem 5 [5,10,30] // []
@@ -306,7 +306,7 @@ Given value is 1: 2 + (3 * 1) + (-5 * 1^2) + (1 * 1^3) = 1.
 */
 
 evaluate :: [Int] Int -> Int
-evaluate coefs val = sum [coef * (val^deg) \\ coef <- coefs & deg <- [0..(length coefs - 1)] ] 
+evaluate coefs val = sum [coef * (val^deg) \\ coef <- coefs & deg <- [0..] ] 
 
 //Start = evaluate [2,3,-5,1] 1 // 1
 //Start = evaluate [1,-5,2,-8] -2 // 83
