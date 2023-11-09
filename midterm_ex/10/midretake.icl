@@ -64,7 +64,7 @@ the longest time.
    the max working hour is 3, and the employee id is 0 */
 f :: [Int] -> [Int]
 f [x] = []
-f [x,y:xs] = [y-x: f ([y] ++ xs)]
+f [x,y:xs] = [y-x: f [y:xs]]
 
 longestWork :: [(Int,Int)] -> Int
 longestWork list = snd (maxList (removeDup [(maxList (map (\(x,y) = y) (filter (\(x,y) = x == id) new_list)), id) \\ (id,h) <- new_list]))
@@ -133,7 +133,7 @@ e.g. 1 	2 	3 	4 	5
 	        
 reduce :: [Int] -> [Int]
 reduce [x] = []
-reduce [x,y:xs] = [x+y : reduce ([y] ++ xs)]
+reduce [x,y:xs] = [x+y : reduce [y:xs]]
 	         
 triSum :: [Int] -> Int
 triSum [x] = x
@@ -194,8 +194,9 @@ Every second, you do the following:
 pickGift :: [Int] Int -> Int
 pickGift list num 
 | num == 0 = sum list
-= pickGift (init sortedList ++ [toInt(sqrt (toReal (last sortedList)))]) (num-1) 
+= pickGift (init sortedList ++ [new_tail]) (num-1) 
 where sortedList = sort list
+	  new_tail = toInt(sqrt (toReal (last sortedList)))
 
 //Start = pickGift [25,64,9,4,100] 4 // 29
 //Start = pickGift [1,1,1,1] 4 // 4
@@ -211,8 +212,9 @@ calculated by multiplying each digit by 2 raised to the power of its position.
            1 * 2^0 = 1 -> 8+0+2+1=11  */
 
 binToDec :: Int -> Int
-binToDec num = sum [b*(2^p) \\ b <- list & p <- [((length list) - 1),((length list) - 2)..0]]
+binToDec num = sum [b*(2^p) \\ b <- list & p <- [start,(start - 1)..0]]
 where list = numToList num
+	  start = (length list) - 1
 
 //Start = binToDec 1011 //11
 //Start = binToDec 10110 //22
