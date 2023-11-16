@@ -1,6 +1,8 @@
 module HW7
 import StdEnv
 
+// BUI NGUYEN KIM HAI --- QMIBHU
+
 /*
 Task 1 - Modify Strings	
 Mr. Johnson, an elderly individual, faces difficulty in finding special characters on his keyboard. So
@@ -18,7 +20,15 @@ For example,
 	"Can you hear me]" -> "Can you hear me?"
 */
 
+trans :: Char -> Char
+trans '+' = ','
+trans '-' = '.'
+trans ']' = '?'
+trans '[' = '!'
+trans c = c
+
 replaceSpecial :: String -> String
+replaceSpecial str = {trans c \\ c <-: str}
 
 //Start = replaceSpecial "+-][" // ",.?!"
 //Start = replaceSpecial "I am getting old+ I think-" // "I am getting old, I think."
@@ -43,7 +53,19 @@ For example,
 You should not shift special characters,but leave them as is
 */
 
+myRem :: Int Int -> Int
+myRem a b 
+| a < 0 = a + b
+= a rem b
+
+shift :: Char Int -> Char
+shift c k
+| ('A' <= c && c <= 'Z') = toChar (myRem (toInt c - toInt 'A' - k) 26) + 'A'
+| ('a' <= c && c <= 'z') = toChar (myRem (toInt c - toInt 'a' - k) 26) + 'a'
+= c
+
 decryptCaesar :: String Int -> String
+decryptCaesar str k = {shift c k \\ c <-: str}
 
 //Start = decryptCaesar "khoor" 3 // "hello"
 //Start = decryptCaesar "Kzshyntsfq-nx-httq" 5 // "Functional-is-cool"
