@@ -26,7 +26,7 @@ top	:: (Stack a) -> a
 top stack = last stack
 
 topn     :: Int (Stack a) -> [a]
-topn n stack = take n stack
+topn n stack = reverse (take n (reverse stackd))
 
 elements :: (Stack a) -> [a]
 elements stack = stack

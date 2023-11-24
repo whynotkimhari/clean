@@ -156,17 +156,21 @@ where list = numToList (abs num)
 :: MaybeInt = Just Int | Nothing
 
 // DEFINITION OF OPERATOR !+! ..... YOUR CODE COMES HERE....
-//(!+!) infixr 6 :: [Int] Int -> MaybeInt
-
+(!+!) infixr 6 :: [Int] Int -> MaybeInt
+(!+!) list x
+| length list > x = Just arr.[x]
+= Nothing
+where
+	arr :: {Int}
+	arr = {y \\ y <- list}
 
 //Just for testing purposed. DO NOT MODIFY
-/*
+
 showFifthElement :: [Int] -> String
 showFifthElement xs
   = case xs !+! 4 of
       Nothing -> "There is no fifth element in this list"
       Just n  -> "The fifth element of the list is: " +++ toString n
-*/
 
 //Start = showFifthElement [1,2..10] // "The fifth element of the list is: 5"
 //Start = showFifthElement [0,0] // "There is no fifth element in this list"
@@ -207,18 +211,25 @@ where list = [x \\ x <-: arr]
 
 :: ColoredRoseTree a = Node a NodeColor [ColoredRoseTree a] | Leaf
 
-
 // TODO
-//instance == FilterType
-//where (==) a b = a == b
+instance toString FilterType
+where 
+	toString AND = "AND"
+	toString OR = "OR"
+
+instance toString NodeColor
+where 
+	toString Red = "Red"
+    toString Green = "Green"
+    toString Blue = "Blue"
+	  
+instance == FilterType
+where 
+	(==) a b = toString a == toString b
   	
 instance == NodeColor
-where (==) a b = idColor a == idColor b
-
-idColor :: NodeColor -> Int
-idColor Red = 0
-idColor Green = 1
-idColor Blue = 2
+where 
+	(==) a b = toString a == toString b
 
 getNodesWithColor :: (ColoredRoseTree a) NodeColor -> [a]
 getNodesWithColor Leaf _ = []
@@ -228,8 +239,10 @@ getNodesWithColor (Node x nodeColor list) color
 
 filterColoredTree :: (ColoredRoseTree a) NodeColor FilterType (a -> Bool) (a -> Bool) -> [a]
 filterColoredTree Leaf _ _ _ _ = []
-filterColoredTree (Node x nodeColor list) color AND cond1 cond2 = [node \\ node <- (getNodesWithColor (Node x nodeColor list) color) | (cond1 node) && (cond2 node)]
-filterColoredTree (Node x nodeColor list) color OR cond1 cond2 = [node \\ node <- (getNodesWithColor (Node x nodeColor list) color) | (cond1 node) || (cond2 node)]
+filterColoredTree (Node x nodeColor list) color fType cond1 cond2 
+| fType == AND = [node \\ node <- nodes | (cond1 node) && (cond2 node)]
+= [node \\ node <- nodes | (cond1 node) || (cond2 node)]
+where nodes = getNodesWithColor (Node x nodeColor list) color
 
 tree1 = Node 1 Red [(Node 2 Blue [Node 4 Blue []]), Leaf, Leaf, (Node 3 Blue [Leaf,Leaf])]
 tree2 = Node 1 Red [(Node 2 Blue [Node 4 Blue []]), Leaf, Leaf, (Node 3 Blue [Leaf,Node 7 Red [Node 9 Red [], Node 10 Red []]])]
