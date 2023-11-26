@@ -15,7 +15,7 @@ A number cannot be a side if it is negative or 0.
 check :: Int Int Int -> Bool
 check a b c 
 | a <= 0 || b <= 0 || c <= 0 = False
-= (a + b >= c) && (a + c >= b) && (b + c >= a)
+= (a + b > c) && (a + c > b) && (b + c > a)
 
 validTriangles :: [(Int,Int,Int)] -> [Bool]
 validTriangles list = [check a b c \\(a,b,c) <- list]
@@ -23,4 +23,4 @@ validTriangles list = [check a b c \\(a,b,c) <- list]
 //Start = validTriangles [] // []
 //Start = validTriangles [(3,3,3), (2,4,5), (4,2,5), (3,3,10)] // [True, True, True, False]
 //Start = validTriangles [(8,2,4), (3,10,3), (1,2,3)] // [False, False, False]
-Start = validTriangles [(10,8,3), (-10,4,2)] // [True, False]
+//Start = validTriangles [(10,8,3), (-10,4,2)] // [True, False]
