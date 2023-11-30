@@ -23,7 +23,11 @@ import StdEnv
 -- of the student from the University.
 */
 
- 
+arr2List :: {a} -> [a]
+arr2List as = [a\\a<-:as]
+
+list2Arr :: [a] -> {a}
+list2Arr xs = {x\\x<-xs}
 
 //---------------
 
@@ -31,7 +35,10 @@ import StdEnv
 Given an array of integers, remove the elements that have even occurances in the array.
 */
 
-// removeOcc :: {Int} -> {Int}
+removeOcc :: {Int} -> {Int}
+removeOcc arr = list2Arr [x \\ x<-list | length (filter ((==)x) list) rem 2 <> 0]
+where 
+	list = arr2List arr
 
 //Start = removeOcc {1,1,2,2,2,3,3,4,5,6,6,6,6} //{2,2,2,4,5}
 //Start = removeOcc {1,1} // {}
@@ -45,8 +52,11 @@ Given a positive integer value n, generate an array that for n=10
 has as elements 1,2,2,3,3,3,4,4,4,4,...,10,...,10.
 */
 
-// generate :: Int -> {Int}
-
+generate :: Int -> {Int}
+generate n = list2Arr list
+where
+	list = flatten [repeatn i i \\ i<-[1..n]]
+	
 //Start :: {Int} // this is needed
 //Start = generate 10 // {1,2,2,3,3,3,4,4,4,4,...,10,...,10}
 //Start = generate 4 // {1,2,2,3,3,3,4,4,4,4}
@@ -77,11 +87,16 @@ Note : if there is more than one cheap shop in the array, return the first one.
 Assume that the given array is not empty.
 */
 
-// cheapestShop :: {Shop} -> (String,City)
+instance < City
+where
+	(<) _ _ = False
 
-// Start = cheapestShop {aldi,spar,lidl,abc} // ("abc",GYOR)
-// Start = cheapestShop {aldi,spar} // ("spar",GYOR)
-// Start = cheapestShop {lidl,aldi} // ("lidl",BUDAPEST)
+cheapestShop :: {Shop} -> (String,City)
+cheapestShop shops = thd3 (minList [(sum [x.price \\ x<-:shop.products],id,(shop.shopName,shop.location)) \\ shop <-: shops & id <- [0..]])
+	
+//Start = cheapestShop {aldi,spar,lidl,abc} // ("abc",GYOR)
+//Start = cheapestShop {aldi,spar} // ("spar",GYOR)
+//Start = cheapestShop {lidl,aldi} // ("lidl",BUDAPEST)
 
 //---------------
 
@@ -109,9 +124,10 @@ pushBack is a function that takes a vector and an element and
 adds the element to the end of the vector
 */
 
-// pushBack :: (Vector a) a -> (Vector a)
+pushBack :: (Vector a) a -> (Vector a)
+pushBack v x = v ++ [x]
 
-// Start = pushBack [1,2,3] 4 //[1,2,3,4]
+//Start = pushBack [1,2,3] 4 //[1,2,3,4]
 // Start = pushBack [1,0,213] 10000 //[1,0,213,10000]
 
 /* 4.2 5 points
@@ -119,7 +135,8 @@ pushFront is a function that takes a vector and an element and
 adds the element to the beginning of the vector
 */
 
-// pushFront :: (Vector a) a -> (Vector a)
+pushFront :: (Vector a) a -> (Vector a)
+pushFront v x = [x] ++ v
 
 // Start = pushFront [1,0,213] 10000 //[10000,1,0,213]
 // Start = pushFront [1,2,3] 4 //[4,1,2,3]
@@ -130,10 +147,15 @@ removes the element from the vector
 If it exists, and returns it. Otherwise it returns an error.
 */
 
-// remove :: (Vector a) a -> (Vector a)
-
-// Start = remove [1,2,3] 2 //[1,3]
-// Start = remove [1,0,213] 10000 //"Element does not exist"
+remove :: (Vector a) a -> (Vector a) | Eq a
+remove v x
+| newV == v = abort "Element does not exist"
+= newV 
+where 
+	newV = filter ((<>)x) v
+	
+//Start = remove [1,2,3] 2 //[1,3]
+//Start = remove [1,0,213] 10000 //"Element does not exist"
 
 /* 4.4 5 points
 indexOf is a function that takes a vector and an element
@@ -141,20 +163,36 @@ and returns the element's index in the vector (counting from 0)
 If it exists otherwise it returns an error.
 */
 
-// indexOf :: (Vector a) a -> Int
-
-// Start = indexOf [1,2,3] 2 // 1
-// Start = indexOf [1,0,213] 10000 //"Element does not exist"
+indexOf :: (Vector a) a -> Int | Eq a
+indexOf v x
+| finder == [] = abort "Element does not exist"
+= hd finder
+where
+	finder = [i \\ y <- v & i <- [0..] | y == x]
+	
+//Start = indexOf [1,2,3] 2 // 1
+//Start = indexOf [1,0,213] 10000 //"Element does not exist"
 
 /* 4.4 10 points
 swap is a function that takes a vector and two elements and swaps the two elements in the vector
 if they both exist, otherwise it returns an error
 */
 
-// swap :: (Vector a) a -> (Vector a)
-
-// Start = swap [1,2,4,5,6,3,888,9,7] 1 3 // [3,2,4,5,6,1,888,9,7]
-// Start = swap [1,0,213] 10000 0 //"Element does not exist"
+swap :: (Vector a) a a -> (Vector a) | Eq a
+swap v a b
+| finderA == [] || finderB == [] = abort "Elment does not exist"
+= [f y i \\ y <- v & i <- [0..]]
+where
+	finderA = [i \\ y <- v & i <- [0..] | y == a]
+	finderB = [i \\ y <- v & i <- [0..] | y == b]
+	
+	f y i
+	| i == hd (finderA) = b
+	| i == hd (finderB) = a
+	= y
+	
+//Start = swap [1,2,4,5,6,3,888,9,7] 1 3 // [3,2,4,5,6,1,888,9,7]
+//Start = swap [1,0,213] 10000 0 //"Element does not exist"
 
 //---------------
 
@@ -163,7 +201,8 @@ For a given n generate a list of triple pairs with numbers for 1 to n,
 their cubes and triples.
 */
 
-//triples :: Int -> [(Int,Int,Int)]
+triples :: Int -> [(Int,Int,Int)]
+triples n = [(i,i^3,i*3) \\ i <- [1..n]]
 
 //Start = triples 2 // [(1,1,3),(2,8,6)]
 //Start = triples 4 // [(1,1,3),(2,8,6),(3,27,9),(4,64,12)]
@@ -186,9 +225,31 @@ After that create an instance for [Int].
 
 */
 
-// class Merge..
+merge :: [Int] [Int] -> [Int]
+merge [] [] = []
+merge [] ys = ys
+merge xs [] = xs
+merge [x:xs] [y:ys] = [x,y] ++ merge xs ys
 
-// instance Merge..
+class Merge a
+where
+	mess :: [a] [a] -> [a]
+	sorted :: [a] [a] -> [a]
+	Empty :: [a]
+
+instance Merge Int
+where
+	mess :: [Int] [Int] -> [Int]
+	mess a b = merge a (reverse b)
+	
+	sorted :: [Int] [Int] -> [Int]
+	sorted a b 
+	| a <> sort a = sorted Empty b
+	| b <> sort b = sorted a Empty
+	= sort (a ++ b)
+	
+	Empty :: [Int]
+	Empty = []
 
 //Start = mess [1,2,3,5] [9,8,10] // [1,10,2,8,3,9,5]
 //Start = sorted [1..10] [7..15] // [1,2,3,4,5,6,7,7,8,8,9,9,10,10,11,12,13,14,15]
@@ -203,11 +264,23 @@ Write a binary search tree type. Build from an arbitrary list a binary search tr
 then collect from the tree the elements (which by this would be sorted)
 */
 
-// bsearch :: [Int] -> ...
+:: BSTTree a = Node a (BSTTree a) (BSTTree a) | Leaf
 
-// bcollect :: ... -> [Int]
+insertBST :: a (BSTTree a) -> (BSTTree a) | Ord a
+insertBST x Leaf = (Node x Leaf Leaf)
+insertBST x (Node a le ri)
+| x <= a = (Node a (insertBST x le) ri)
+= (Node a le (insertBST x ri))
 
+bsearch :: [a] -> (BSTTree a) | Ord a
+bsearch [] = Leaf
+bsearch [x:xs] = insertBST x (bsearch xs)
 
+bcollect :: (BSTTree a) -> [a]
+bcollect Leaf = []
+bcollect (Node a le ri) = bcollect le ++ [a] ++ bcollect ri
+
+//Start = bcollect (bsearch [1,5,8,4])
 //---------------
 
 /* 8. FlexTree. 10 points
@@ -231,7 +304,8 @@ For example, if we have a FlexTree:
 (TernaryNode 1)
 / | \
 (BinaryNode 2) TerminalNode (UnaryNode 3)
-/ \ |
+/ \ 
+|
 TerminalNode (UnaryNode 4) (BinaryNode 5)
 | / \
 TerminalNode TerminalNode TerminalNode
@@ -243,9 +317,9 @@ After converting it to the list with these rules we get:
  
 
 :: FlexTree a = TernaryNode a (FlexTree a) (FlexTree a) (FlexTree a)
-                            | BinaryNode a (FlexTree a) (FlexTree a)
-                            | UnaryNode a (FlexTree a)
-                            | TerminalNode
+				| BinaryNode a (FlexTree a) (FlexTree a)
+	            | UnaryNode a (FlexTree a)
+				| TerminalNode
 
 ftree1 = UnaryNode 1 (BinaryNode 2 TerminalNode TerminalNode)
 ftree2 = BinaryNode 1 TerminalNode ftree1
@@ -254,9 +328,13 @@ ftree4 = TernaryNode 1 ftree2 TerminalNode (BinaryNode 2 (TernaryNode 1 Terminal
 
  
 
-// flexTreeToList :: (FlexTree a) -> [a]
+flexTreeToList :: (FlexTree a) -> [a]
+flexTreeToList TerminalNode = []
+flexTreeToList UnaryNode x tree = [x] ++ flexTreeToList tree
+flexTreeToList BinaryNode x le ri = flexTreeToList le ++ [x] ++ flexTreeToList ri
+flexTreeToList TernaryNode x le mi ri = flexTreeToList le ++ [x] ++ flexTreeToList mi ++ flexTreeToList ri
 
-// Start = flexTreeToList TerminalNode // []
+Start = flexTreeToList TerminalNode // []
 // Start = flexTreeToList ftree1 // [1,2]
 // Start = flexTreeToList ftree2 // [1,1,2]
 // Start = flexTreeToList ftree3 // [3,3,3]

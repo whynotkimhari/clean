@@ -15,6 +15,13 @@ import StdEnv
 
 //----------------------------
 
+arr2List :: {a} -> [a]
+arr2List as = [a\\a<-:as]
+
+list2Arr :: [a] -> {a}
+list2Arr xs = {x\\x<-xs}
+
+
 /*1. Arrays. (10 points)
 *
 * Implement the 'shiftCipher' function which takes a string consists of English capital letters
@@ -35,8 +42,8 @@ L shifted by 3 -> O, because O comes 3 positions after L in the set of English c
 ...
 */
 
-//shiftCipher:: String Int -> String
-
+shiftCipher:: String Int -> String
+shiftCipher chars k = {toChar ((toInt (char - 'A') + k) rem 26) + 'A' \\ char <-: chars}
 //Start = shiftCipher "HELLOWORLD" 3 // "KHOORZRUOG"
 //Start = shiftCipher "CLEANISFUN" 1 // "DMFBOJTGVO"
 //Start = shiftCipher "FUNCTIONALPROGRAMMINGISGREATSUBJECT" 4 // "JYRGXMSREPTVSKVEQQMRKMWKVIEXWYFNIGX"
@@ -65,6 +72,9 @@ tool3_location ={x =0.0, y = 0.0}
 tool4_location :: Point
 tool4_location ={x =100.0, y = 200.0}
 
+dsq :: Point Point -> Real
+dsq pa pb = (pa.x - pb.x)*(pa.x - pb.x) + (pa.y - pb.y)*(pa.y - pb.y)
+
 /*2. Records. (10 points)
 *
 * There is a broadcaster, check if it can be received its signal by
@@ -77,7 +87,8 @@ tool4_location ={x =100.0, y = 200.0}
 * Hint: distance = square_root((x_2-x_1)^2+(y_2-y_1)^2) between any two points.
 */
 
-//check :: Circle {Point} -> Bool
+check :: Circle {Point} -> Bool
+check circle points = or [(dsq point circle.center) <= circle.radius * circle.radius \\ point <-: points]
 
 //Start = check broadcaster {car_location,bus_location} // True
 //Start = check broadcaster {tool1_location,tool2_location} // False
@@ -123,7 +134,10 @@ lib6 = {lib_name = "lib6" , books ={b4,b4,b2,b1}}
 */
 
 //==
-
+instance == Book
+where
+	(==) a b = a.title == b.title && a.author == b.author && a.pyear == b.pyear && a.num_of_pages == b.num_of_pages
+	
 //Start = b1 == b1 // True
 //Start = b1 == b2 // False
 
@@ -134,7 +148,9 @@ lib6 = {lib_name = "lib6" , books ={b4,b4,b2,b1}}
 */
 
 //<
-
+instance < Book
+where
+	(<) a b = a.pyear < b.pyear
 //Start = b1 < b2 // False
 //Start = b3 < b2 // True
 
@@ -146,7 +162,18 @@ lib6 = {lib_name = "lib6" , books ={b4,b4,b2,b1}}
 */
 
 //+
+pubYear :: Book Book -> Bool
+pubYear a b = a < b
 
+instance + Library
+where
+	(+) libA libB = {lib_name=new_name, books = list2Arr (sortBy pubYear books)}
+	where 
+		new_name = libA.lib_name+++libB.lib_name
+		booksA = arr2List libA.books
+		booksB = arr2List libB.books
+		books = removeDup (booksA ++ booksB)
+	
 //Start = lib1 + lib1
 //(Library "lib1lib1" {(Book "Functional Programming" "Andrey" 1999 1250 True),(Book "C Programming Language" "Abel" 2022 1501 False)})
 //Start = lib1 + lib2
@@ -159,7 +186,13 @@ lib6 = {lib_name = "lib6" , books ={b4,b4,b2,b1}}
 */
 
 //==
-
+instance == Library
+where
+	(==) libA libB = sort booksA == sort booksB
+	where
+		booksA = arr2List libA.books
+		booksB = arr2List libB.books
+	
 //Start = lib1 == lib1 // True
 //Start = lib3 == lib6 // False
 //Start = lib1 == lib5 // False
@@ -179,8 +212,19 @@ lib6 = {lib_name = "lib6" , books ={b4,b4,b2,b1}}
 * Example: {"hello","ABC","CD"}+{"World","AB","Abod"}->{"hWeolrllod","AABBC","CADbod"}
 */
 
-
 // +
+str2List :: String -> [String]
+str2List x = [toString c\\c<-:x]
+
+merge :: [String] [String] -> String
+merge [] [] = ""
+merge xs [] = foldr (+++) "" xs
+merge [] ys = foldr (+++) "" ys
+merge [x:xs] [y:ys] = x +++ y +++ (merge xs ys)
+
+instance + {String}
+where
+	(+) arr1 arr2 = {merge (str2List x) (str2List y) \\ x<-:arr1 & y<-:arr2}
 
 //Start :: {String} // this is needed at each start
 //Start = {"hello","ABC","CD"} + {"World","AB","Abod"} //{"hWeolrllod","AABBC","CADbod"}
@@ -223,8 +267,19 @@ tree2 = Node 5 (Node 4 (Node 3 (Node 1 Leaf Leaf) Leaf) Leaf) (Node 6 Leaf Leaf)
 tree3 = Node 3 (Node 0 (Node -1 Leaf Leaf) (Node 1 Leaf Leaf)) tree1
 tree4 = Node 15 (tree3) (Node 20 Leaf (Node 23 Leaf (Node 25 Leaf Leaf)))
 
+getHeight :: (Tree a) -> Int
+getHeight Leaf = 0
+getHeight (Node _ le ri) = 1 + max (getHeight le) (getHeight ri)
 
-//AVL_prop_check :: (Tree Int) -> Bool
+diffOne :: Int Int -> Bool
+diffOne a b = abs (a - b) <= 1
+
+AVL_prop_check :: (Tree Int) -> Bool
+AVL_prop_check Leaf = True
+AVL_prop_check (Node _ le ri) = diffOne hLe hRi && AVL_prop_check le && AVL_prop_check ri
+where 
+	hLe = getHeight le
+	hRi = getHeight ri
 
 //Start = AVL_prop_check tree1 // True
 //Start = AVL_prop_check tree2 // False
@@ -267,8 +322,19 @@ and the original number is 38: 2 + 3 + 4 + 5 + 6 + 8 + 10 = 38
 BsTree1 = (Node 5 (Node 3 (Node 2 Leaf Leaf) (Node 4 Leaf Leaf)) (Node 8 (Node 6 Leaf Leaf) (Node 10 Leaf Leaf) ))
 BsTree2 = (Node 4 (Node 3 (Node 3 (Node 2 (Node 1 Leaf Leaf) Leaf) Leaf) (Node 4 Leaf Leaf)) (Node 5 (Node 5 Leaf Leaf) (Node 6 Leaf Leaf)))
 
-//transform :: (Tree Int) -> (Tree Int)
+inOrder :: (Tree Int) -> [Int]
+inOrder Leaf = []
+inOrder (Node x le ri) = inOrder le ++ [x] ++ inOrder ri
 
+transform :: (Tree Int) -> (Tree Int)
+transform root = myTrans root (inOrder root)
+
+myTrans :: (Tree Int) [Int] -> (Tree Int)
+myTrans Leaf _ = Leaf
+myTrans (Node x le ri) list = (Node y (myTrans le list) (myTrans ri list))
+where
+	y = sum (filter ((<=)x) list)
+	
 //Start = transform BsTree1
 //(Node 29 (Node 36 (Node 38 Leaf Leaf) (Node 33 Leaf Leaf)) (Node 18 (Node 24 Leaf Leaf) (Node 10 Leaf Leaf)))
 //Start = transform BsTree2
@@ -291,9 +357,24 @@ Therefore, absolute value of the sum must be considered.
 c) Multiply the smalles unique tuple with the array elements.
 (-1,3,2) {(-3,-1,-2), (-1,3,2)} => {(3,-3,-4), (1,9,4)}
 */
-
-//alterArray :: {(Int, Int, Int)} -> {(Int, Int, Int)}
-
+instance isOdd (Int,Int,Int)
+where
+	isOdd (a,b,c) = a <> b && b <> c && c <> a
+	
+instance * (Int,Int,Int)
+where
+	(*) (a,b,c) (x,y,z) = (a*x, b*y, c*z)
+	
+myTupleAbs :: (Int,Int,Int) -> Int
+myTupleAbs (a,b,c) = abs (a + b + c)
+	
+alterArray :: {(Int, Int, Int)} -> {(Int, Int, Int)}
+alterArray arr = {target * x \\ x<-list}
+where
+	list = arr2List arr
+	uniqs = filter isOdd list
+	target = snd ( minList [(myTupleAbs uniq, uniq) \\ uniq <- uniqs] )
+	
 //Start = alterArray {(-1,3,2), (-3,-1,-2)} // {(1,9,4),(3,-3,-4)}
 //Start = alterArray {(1,-1,0), (-1,3,2), (-3,-1,-2)} // {(1,1,0),(-1,-3,0),(-3,1,0)}
 //Start = alterArray {(0,0,0),(1,-1,2), (-1,3,2), (-3,-1,-2)} // {(0,0,0),(1,1,4),(-1,-3,4),(-3,1,-4)}
@@ -326,7 +407,17 @@ Leon = {fullName = "Leon Kennedy", yearOfMarriage = 2000}
 Ada :: EngagedPerson
 Ada = {fullName = "Ada Kennedy", yearOfMarriage = 2000}
 
-//getOldestMarriage :: {(EngagedPerson, EngagedPerson)} -> String
+getFamilyName :: (EngagedPerson,EngagedPerson) -> String
+getFamilyName (wife,husb) = foldr (+++) "" (reverse [x \\ x<-w & y<-h | x <> " " && x == y])
+where
+	w = reverse (str2List wife.fullName)
+	h = reverse (str2List husb.fullName)
+
+getOldestMarriage :: {(EngagedPerson, EngagedPerson)} -> String
+getOldestMarriage arr = snd target
+where
+	new_list = [((fst x).yearOfMarriage,getFamilyName x) \\x<-:arr]
+	target = minList new_list
 
 //Start = getOldestMarriage { (Leon, Ada), (Mike, Edna)} // "Kennedy"
 //Start = getOldestMarriage { (Leon, Ada), (Homer, Marge)} // "Simpson"
@@ -344,8 +435,21 @@ Ada = {fullName = "Ada Kennedy", yearOfMarriage = 2000}
 
 :: Color = Red | Orange | Yellow | Green | Blue | Indigo | Violet
 
-//neighbours :: [Color] -> [Color]
+instance toInt Color
+where
+	toInt Red = 0
+	toInt Orange = 1
+	toInt Yellow = 2
+	toInt Green = 3
+	toInt Blue = 4
+	toInt Indigo = 5
+	toInt Violet = 6
 
+neighbours :: [Color] -> [Color]
+neighbours colors = [hd (filter (\x = ((toInt color + 2) rem 7) == toInt x) base) \\ color <- colors]
+where
+	base = [Red,Orange,Yellow,Green,Blue,Indigo,Violet]
+	
 //Start = neighbours [Red,Orange,Yellow,Green,Blue,Indigo,Violet] //[Yellow,Green,Blue,Indigo,Violet,Red,Orange]
 //Start = neighbours [Blue] //[Violet]
 //Start = neighbours [] //[]
@@ -387,7 +491,18 @@ bt22 = (BTNode2 (BTNode2 BTLeaf2 BTLeaf2) (BTNode2 BTLeaf2 BTLeaf2))
 bt23 = (BTNode2 (BTNode2 bt22 bt21) (BTNode2 BTLeaf2 bt22))
 bt24 = (BTNode2 (BTNode2 bt23 bt21) (BTNode2 BTLeaf2 bt22))
 
-//getBTDiameter :: BinaryTree2 -> Int
+getDepth :: BinaryTree2 -> Int
+getDepth BTLeaf2 = 1
+getDepth (BTNode2 le ri) = 1 + max (getDepth le) (getDepth ri)
+
+getBTDiameter :: BinaryTree2 -> Int
+getBTDiameter BTLeaf2 = 1
+getBTDiameter (BTNode2 le ri) = maxList [1 + getDepth le + getDepth ri, getBTDiameter le, getBTDiameter ri]
+
+// in every node, there are 3 cases
+// 1. The longest path will pass the node
+// 2. The longest path will pass the left child
+// 2. The longest path will pass the right child
 
 //Start = getBTDiameter BTLeaf2 // 1
 //Start = getBTDiameter bt21 // 4
