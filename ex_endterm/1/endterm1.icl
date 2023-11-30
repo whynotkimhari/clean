@@ -23,6 +23,12 @@ import StdEnv
 -- of the student from the University.
 */
 
+toArr :: [a] -> {a}
+toArr xs = {x\\x<-xs}
+
+toList :: {a} -> [a]
+toList as = [a\\a<-:as]
+
 // 1.----------------------------
 /* Record Student. (10 points)
 *
@@ -38,18 +44,32 @@ import StdEnv
 * If multiple students have same maximum average return any of their IDs.
 */
 
-//StudyLevel
+::StudyLevel = BSc | MSc | PhD
 
-//Student
+::Student = {id::String, level::StudyLevel, grades::[Int]}
 
-/*
+
 st1 = {id="st-1", level=BSc, grades=[3,4,3]}
 st2 = {id="st-2", level=MSc, grades=[3,1,3]}
 st3 = {id="st-3", level=PhD, grades=[5]}
 st4 = {id="st-4", level=BSc, grades=[5,5,4]}
-st5 = {id="st-5", level=BSc, grades=[5,5,5,2,4]}*/
+st5 = {id="st-5", level=BSc, grades=[5,5,5,2,4]}
 
-//getBestBScStudent :: [Student] -> String
+instance == StudyLevel
+where
+	(==) BSc BSc = True
+	(==) MSc MSc = True
+	(==) PhD PhD = True
+	(==) _ _ = False
+
+mySort :: Student Student -> Bool
+mySort a b = avg (a.grades) > avg (b.grades)
+
+getBestBScStudent :: [Student] -> String
+getBestBScStudent [] = "ERROR"
+getBestBScStudent students = (hd BScs).id
+where 
+	BScs = sortBy mySort [student \\ student <-students | student.level == BSc]
 
 //Start = getBestBScStudent [st1] // "st-1"
 //Start = getBestBScStudent [st1, st4, st5] // "st-4"
@@ -75,8 +95,12 @@ r is repeated 2 times in the given string
 t is repeated 2 times in the given string
 */
 
-//count :: String -> {(Char, Int)}
-
+count :: String -> {(Char, Int)}
+count string = {tup\\tup<-list}
+where 
+	chars = [char\\char<-:string]
+	tmpList = [(char,length (filter ((==)char) chars)) \\char<-chars | length (filter ((==)char) chars) > 1]
+	list = removeDup tmpList
 //Start = count "thequickbrownfoxjumpsoverthelazydog" // {('t',2),('h',2),('e',3),('u',2),('r',2),('o',4)}
 //Start = count "Helloworld" // {('l',3),('o',2)}
 //Start = count "FUNCTIONSLPROGRAMMINGISFUN" // {('F',2),('U',2),('N',4),('I',3),('O',2),('S',2),('R',2),('G',2),('M',2)}
@@ -103,22 +127,38 @@ t is repeated 2 times in the given string
 */
 
 //*
+instance * [Int]
+where 
+	(*) :: ![Int] ![Int] -> [Int]
+	(*) x y = [a*b \\ a <- x & b <- y]
 
 //+
+instance + [Int]
+where 
+	(+) :: ![Int] ![Int] -> [Int]
+	(+) x y = [a+b \\ a <- x & b <- y]
 
 //~
+instance ~ [Int]
+where 
+	~ :: ![Int] -> [Int]
+	~ x = [a \\ a <- x | a > 0]
 
 //-
+instance - [Int]
+where 
+	(-) :: ![Int] ![Int] -> [Int]
+	(-) x y = [a \\ a <- x | not (isMember a y)]
 
-// Start = [1, 2, -1] * [2, 3, 4] // [2,6,-4]
-// Start = [1,2,3] * [2, 4] // [2, 8]
-// Start = [1, 2, -1] + [2, 3, 4] // [3, 5, 3]
-// Start = [1,-2,3] + [2, 4] // [3, 2]
-// Start = ~[1, ~1, 3, ~2, ~3, 4] // [1, 3, 4]
-// Start = ~[~1, ~2] // []
-// Start = [1..5] - [2,4] // [1, 3, 5]
-// Start = [1..10]-[1..8] // [9,10]
-// Start = [1..8] - [1..10] // []
+//Start = [1, 2, -1] * [2, 3, 4] // [2,6,-4]
+//Start = [1,2,3] * [2, 4] // [2, 8]
+//Start = [1, 2, -1] + [2, 3, 4] // [3, 5, 3]
+//Start = [1,-2,3] + [2, 4] // [3, 2]
+//Start = ~[1, ~1, 3, ~2, ~3, 4] // [1, 3, 4]
+//Start = ~[~1, ~2] // []
+//Start = [1..5] - [2,4] // [1, 3, 5]
+//Start = [1..10]-[1..8] // [9,10]
+//Start = [1..8] - [1..10] // []
 
 
 // 4.----------------------------
@@ -129,15 +169,15 @@ t is repeated 2 times in the given string
 * The height of a binary tree is the total number of nodes from
 * the root node to the most distant leaf node.
 * Ex.: this is just illustration, the exercise has no values in nodes and leaves
-* 1
-* / \             The height of this tree is 5.
-* 2  3           The farthest nodes are 10, 11, 12 and 13
-* / \             And the distance from root to any of them
-* 4  5          is 5. Other nodes are closer to the root.
-*  / \    / \
-* 6  7   8 9
-* / \           / \
-* 10 11 12 13
+*         1
+*        / \             The height of this tree is 5.
+*       2   3           The farthest nodes are 10, 11, 12 and 13
+*      /     \             And the distance from root to any of them
+* 	  4       5          is 5. Other nodes are closer to the root.
+*    / \     / \
+* 	6   7   8   9
+*  / \         / \
+* 10 11 	  12 13
 */
 
 :: BinaryTree = BTNode BinaryTree BinaryTree | BTLeaf
@@ -147,7 +187,9 @@ bt2 = (BTNode (BTNode BTLeaf BTLeaf) (BTNode BTLeaf BTLeaf))
 bt3 = (BTNode (BTNode bt2 bt1) (BTNode BTLeaf bt2))
 bt4 = (BTNode (BTNode bt3 bt1) (BTNode BTLeaf bt2))
 
-//getBTHeight :: BinaryTree -> Int
+getBTHeight :: BinaryTree -> Int
+getBTHeight BTLeaf = 1
+getBTHeight (BTNode le ri) = 1 + max (getBTHeight le) (getBTHeight ri)
 
 //Start = getBTHeight BTLeaf // 1
 //Start = getBTHeight bt1 // 3
@@ -176,7 +218,9 @@ linkedlist2 = Pointer "y" (Pointer "e" (Pointer "H" Nil))
 * and inserts a new node at the end of it with the given value.
 */
 
-//Insert :: (LinkedList String) String -> (LinkedList String)
+Insert :: (LinkedList String) String -> (LinkedList String)
+Insert Nil str = Pointer str Nil
+Insert (Pointer s next) str = (Pointer s (Insert next str))
 
 //Start = Insert linkedlist1 "World" // (Pointer "o" (Pointer "l" (Pointer "l" (Pointer "e" (Pointer "H" (Pointer "World" Nil))))))
 //Start = Insert linkedlist1 "" // (Pointer "o" (Pointer "l" (Pointer "l" (Pointer "e" (Pointer "H" (Pointer "" Nil))))))
@@ -190,7 +234,26 @@ linkedlist2 = Pointer "y" (Pointer "e" (Pointer "H" Nil))
 * and returns a reversed version of it.
 */
 
-//Reverse :: (LinkedList String) -> (LinkedList String)
+instance == (LinkedList String)
+where 
+	(==) Nil Nil = True
+	(==) (Pointer s ns) (Pointer z nz) = s == z && ns == nz
+	(==) _ _ = False 
+
+loop :: (LinkedList String) -> (LinkedList String)
+loop Nil = Nil
+loop (Pointer s next) = next
+
+destruct :: (LinkedList String) -> [String]
+destruct head = (map (\(Pointer s n) = s) (takeWhile ((<>)Nil) (iterate (\x = loop x) head)))
+
+construct :: [String] -> (LinkedList String)
+construct [] = Nil
+construct [x:xs] = (Pointer x (construct xs))
+
+Reverse :: (LinkedList String) -> (LinkedList String)
+Reverse head = construct strs
+where strs = reverse (destruct head)
 
 //Start = Reverse linkedlist1 //(Pointer "H" (Pointer "e" (Pointer "l" (Pointer "l" (Pointer "o" Nil)))))
 //Start = Reverse (Insert linkedlist1 "World") //(Pointer "World" (Pointer "H" (Pointer "e" (Pointer "l" (Pointer "l" (Pointer "o" Nil))))))
@@ -204,8 +267,12 @@ linkedlist2 = Pointer "y" (Pointer "e" (Pointer "H" Nil))
 * and removes the first occurrence of the given value if it exists.
 */
 
-//delete ::(LinkedList String) String -> (LinkedList String)
-
+delete ::(LinkedList String) String -> (LinkedList String)
+delete head str = construct strs
+where 
+	list = destruct head
+	strs = filter ((<>)str) list
+	
 //Start = delete linkedlist1 "h" //(Pointer "o" (Pointer "l" (Pointer "l" (Pointer "e" (Pointer "H" Nil)))))
 //Start = delete linkedlist1 "H" // (Pointer "o" (Pointer "l" (Pointer "l" (Pointer "e" Nil))))
 //Start = delete linkedlist2 "y" // (Pointer "e" (Pointer "H" Nil))
@@ -218,8 +285,13 @@ linkedlist2 = Pointer "y" (Pointer "e" (Pointer "H" Nil))
 * concatenates the second to the end of first.
 */
 
-//concat ::(LinkedList String) (LinkedList String) -> (LinkedList String)
-
+concat ::(LinkedList String) (LinkedList String) -> (LinkedList String)
+concat headA headB = construct listX
+where
+	listA = destruct headA
+	listB = destruct headB
+	listX = listA ++ listB
+	
 //Start = concat linkedlist1 linkedlist2 // (Pointer "o" (Pointer "l" (Pointer "l" (Pointer "e" (Pointer "H" (Pointer "y" (Pointer "e" (Pointer "H" Nil))))))))
 //Start = concat linkedlist2 linkedlist2 // (Pointer "y" (Pointer "e" (Pointer "H" (Pointer "y" (Pointer "e" (Pointer "H" Nil))))))
 //Start = concat Nil linkedlist2 // (Pointer "y" (Pointer "e" (Pointer "H" Nil)))
@@ -257,8 +329,24 @@ fakePer1 = {name = "A", age=12, inQueue=True, ip = 100025}
 posssibleFake :: BasicPersonAccount
 posssibleFake = {name = "C", age=18, inQueue=True, ip = 12205}
 
-//findFakes :: {BasicPersonAccount} -> {BasicPersonAccount}
+instance == BasicPersonAccount
+where
+	(==) x head = x.name == head.name && x.ip == head.ip && x.age == head.age
 
+change :: BasicPersonAccount -> BasicPersonAccount
+change x = {x & inQueue=False}
+
+findFakes :: {BasicPersonAccount} -> {BasicPersonAccount}
+findFakes arr
+| list == [] = {}
+| length fakes > 0 = toArr ([change head] ++ toList (findFakes new_arr))
+= toArr ([head] ++ toList (findFakes new_arr))
+where
+	head = arr.[0]
+	list = toList arr
+	fakes = [x \\ x<-list | x.name == head.name && x.ip == head.ip && x.age <> head.age]
+	new_arr = {x \\ x<-list | not (isMember x fakes) && x <> head}
+	
 //Start = findFakes {per1, fakePer1, per2, per3, fakePer1, posssibleFake}
 //{(BasicPersonAccount "A" 45 False 100025),(BasicPersonAccount "B" 22 True 755542),(BasicPersonAccount "C" 18 True 155200),(BasicPersonAccount "C" 18 True 12205)}
 //Start = findFakes {per1, per1, per1} // {(BasicPersonAccount "A" 45 True 100025)}
@@ -270,7 +358,7 @@ posssibleFake = {name = "C", age=18, inQueue=True, ip = 12205}
 /* Matrices. (10 points)
 *
 * Given an array of different Matrices, return the matrix with the largest diagonal sum.
-* Mat1 = [[1,2,3],[1,1,1], [3,3,3]] Mat1 diagonal sum is 1 + 1 + 3 = 3
+* Mat1 = [[1,2,3],[1,1,1], [3,3,3]] Mat1 diagonal sum is 1 + 1 + 3 = 5
 * Mat2 = [[3,3,3],[0,0,0], [1,1,1]] Mat2 diagonal sum is 3 + 0 + 1 = 4
 * Therefore, Mat1 is the largest between these two matrices.
 * The elements of diagonal are on the i-th row and in i-th column.
@@ -281,7 +369,21 @@ Mat2 = [[3,3,3], [0,0,0], [1,1,1]]
 Mat3 = [[3,3,3,3], [3,3,3,3], [3,3,3,3], [3,3,3,3]]
 Mat4 = [[3,3,3,3], [3,(-3),3,3], [3,3,(-3),3], [3,3,10,3]]
 
-//largestMat :: {[[Int]]} -> [[Int]]
+sumDiag :: [[Int]] -> Int
+sumDiag mat = sum [arr.[i*n+j] \\ i<-[0..(m-1)], j<-[0..(n-1)] | i == j]
+where
+	m = length mat
+	n = length (hd mat)
+	arr = toArr (flatten mat)
+	
+largestMat :: {[[Int]]} -> [[Int]]
+largestMat arr = fst (hd sorted)
+where 
+	list = toList arr
+	sorted = sortBy cond [(mat, sumDiag mat) \\ mat<-list]
+	cond :: (a,Int) (a,Int) -> Bool
+	cond a b = snd a > snd b
+	
 
 //Start = largestMat {Mat1, Mat2} // [[1,2,3],[1,1,1],[3,3,3]]
 //Start = largestMat {Mat1, Mat3} // [[3,3,3,3],[3,3,3,3],[3,3,3,3],[3,3,3,3]]
@@ -300,7 +402,6 @@ Mat4 = [[3,3,3,3], [3,(-3),3,3], [3,3,(-3),3], [3,3,10,3]]
 
 :: MyList a = Elem a (MyList a) | Empty
 
-
 list1 :: (MyList Int)
 list1 = Elem 4 (Elem 3 (Elem 2 (Elem 1 (Empty) ) ) )
 
@@ -310,8 +411,28 @@ list2 = Elem 2 (Elem 6 (Elem 6 (Elem 8 (list1) ) ) )
 list3 :: (MyList Int)
 list3 = Empty
 
-//toString
+instance == (MyList Int)
+where 
+	(==) Empty Empty = True
+	(==) (Elem s ns) (Elem z nz) = s == z && ns == nz
+	(==) _ _ = False 
 
+loop8 :: (MyList Int) -> (MyList Int)
+loop8 Empty = Empty
+loop8 (Elem s next) = next
+
+destruct8 :: (MyList Int) -> [Int]
+destruct8 head = (map (\(Elem s n) = s) (takeWhile ((<>)Empty) (iterate (\x = loop8 x) head)))
+
+toStr :: [Int] -> String
+toStr xs = foldr (+++) "" ( map (\x = toString x +++ ",") (init xs) ) +++ toString (last xs)
+
+//toString
+instance toString (MyList Int)
+where
+	toString Empty = "[]"
+	toString (Elem x ns) = "[" +++ toStr (destruct8 (Elem x ns)) +++ "]"
+	
 //Start = toString list1 // "[4,3,2,1]"
 //Start = toString list2 // "[2,6,6,8,4,3,2,1]"
 //Start = toString list3 // "[]"
@@ -339,8 +460,24 @@ treeRight = Node (FirstName "A") Leaf (Node (LastName "B") Leaf ( Node (MiddleNa
 treeNone :: (Tree (TypeName String))
 treeNone = Leaf
 
-
-//firstAndMiddle :: (Tree (TypeName String)) -> [String]
+instance == (TypeName String)
+where
+	(==) (FirstName _) (FirstName _) = True
+	(==) (MiddleName _) (MiddleName _) = True
+	(==) (LastName _) (LastName _) = True
+	(==) _ _ = False
+	
+instance toString (TypeName String)
+where
+	toString (FirstName name) = name
+	toString (MiddleName name) = name
+	toString (LastName name) = name
+	
+firstAndMiddle :: (Tree (TypeName String)) -> [String]
+firstAndMiddle Leaf = []
+firstAndMiddle (Node type le ri)
+| type == (FirstName "") || type == (MiddleName "") = [toString type] ++ firstAndMiddle le ++ firstAndMiddle ri
+= firstAndMiddle le ++ firstAndMiddle ri
 
 //Start = firstAndMiddle treeBig // ["Tariq","Beka","Mohido"]
 //Start = firstAndMiddle treeRight // ["A","C","D"]
@@ -357,11 +494,16 @@ treeNone = Leaf
 * Note: The task is easiest if you create an instance for function toInt
 */
 
+::OneOf a b = A a | B b
 
-:: OneOf a b = A a | B b
+instance toInt (OneOf String Char)
+where
+	toInt (A a) = length [c\\c<-:a]
+	toInt (B b) = 1
 
-//findWhich :: [(OneOf String Char)] -> Int
-
+findWhich :: [(OneOf String Char)] -> Int
+findWhich list = sum [toInt x \\ x<-list]
+	
 //Start = findWhich [(A "Hello"), (B 'h'), (A "This is new")] // 17
 //Start = findWhich [(A "H"), (A "e"), (A "l")] // 3
 //Start = findWhich [(B 'H'), (B 'e'), (B 'l')] // 3
