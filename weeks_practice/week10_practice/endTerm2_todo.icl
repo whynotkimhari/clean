@@ -178,7 +178,8 @@ from 1st tree is equal to 2nd tree.
 instance == (Tree a) | == a
 where
 	(==) Leaf Leaf = True
-	(==) (Node x l r) (Node y p q) = and [x ==]
+	(==) (Node x l r) (Node y p q) = and [x == y, l == p, r == q]
+	
 //Start = tree1 == tree1 // True
 //Start = tree2 == tree3 // False
 //Start = tree4 == tree4 // True
@@ -209,12 +210,66 @@ the right tree is less than 1
 Note: There is no dublication in the averages.
 */
 
-//createStudTree :: [Student] -> (Tree Student)
-  
+val :: (Tree a) -> a
+val (Node x _ _) = x
+
+diff :: (Tree a) -> Int
+diff (Node _ le ri) = getDepth le - getDepth ri
+
+getLe :: (Tree a) -> (Tree a)
+getLe Leaf = Leaf
+getLe (Node _ le _) = le
+
+getRi :: (Tree a) -> (Tree a)
+getRi Leaf = Leaf
+getRi (Node _ _ ri) = ri
+
+rotR :: (Tree a) -> (Tree a)
+rotR Leaf = Leaf
+rotR (Node x le ri) = (Node (val le) (getLe le) (Node x (getRi le) ri))
+
+rotL :: (Tree a) -> (Tree a)
+rotL Leaf = Leaf
+rotL (Node x le ri) = (Node (val ri) (Node x (getLe ri) le) (getRi ri))
+
+getDepth :: (Tree a) -> Int
+getDepth Leaf = 0
+getDepth (Node _ le ri) = 1 + max (getDepth le) (getDepth ri)
+
+insertToTree :: Student (Tree Student) -> (Tree Student)
+insertToTree student Leaf = (Node student Leaf Leaf)
+insertToTree student (Node stu le ri)
+| avg student.grades <= avg stu.grades = balance (Node stu (insertToTree student le) ri)
+= balance (Node stu le (insertToTree student ri))
+
+balance :: (Tree a) -> (Tree a)
+balance Leaf = Leaf
+balance (Node x le ri)
+| diff root == 2 && diff le == 1 = rotR root							// case LL	- rotR father
+| diff root == 2 && diff le == -1 = rotR (Node x (rotL le) ri)			// case LR  - rotL left child, then rotR father
+| diff root == -2 && diff ri == -1 = rotL root							// case RR - rotL father
+| diff root == -2 && diff ri == 1 = rotL (Node x le (rotR ri))			// case RL - rotR right child, then rotL father
+= root																	// balance
+where
+	root = (Node x le ri)
+	
+createStudTree :: [Student] -> (Tree Student)
+createStudTree [] = Leaf
+createStudTree [student:students] = insertToTree student (createStudTree students)
+
 //Start = createStudTree [] // Leaf
-//Start = createStudTree [A,B,C] //(Node (Student "B" [1,2,3,4]) (Node (Student "A" [1,2,3]) Leaf Leaf) (Node (Student "C" [1,2,3,4,5]) Leaf Leaf))
-//Start = createStudTree [A,B,C,D] //(Node (Student "C" [1,2,3,4,5]) (Node (Student "B" [1,2,3,4]) (Node (Student "A" [1,2,3]) Leaf Leaf) Leaf) (Node (Student "D" [1,2,3,4,5,6]) Leaf Leaf))
-//Start = createStudTree [C,D,A,B] //(Node (Student "C" [1,2,3,4,5]) (Node (Student "B" [1,2,3,4]) (Node (Student "A" [1,2,3]) Leaf Leaf) Leaf) (Node (Student "D" [1,2,3,4,5,6]) Leaf Leaf))
+
+//Start = (createStudTree [A,B,C]) 
+//(Node (Student "B" [1,2,3,4]) (Node (Student "A" [1,2,3]) Leaf Leaf) (Node (Student "C" [1,2,3,4,5]) Leaf Leaf))
+
+//Start = createStudTree [A,B,C,D] 
+//(Node (Student "C" [1,2,3,4,5]) (Node (Student "B" [1,2,3,4]) (Node (Student "A" [1,2,3]) Leaf Leaf) Leaf) (Node (Student "D" [1,2,3,4,5,6]) Leaf Leaf))
+
+//Start = createStudTree [C,D,A,B] 
+//(Node (Student "C" [1,2,3,4,5]) (Node (Student "B" [1,2,3,4]) (Node (Student "A" [1,2,3]) Leaf Leaf) Leaf) (Node (Student "D" [1,2,3,4,5,6]) Leaf Leaf))
+
+// or my sol: (Node (Student "B" [1,2,3,4]) (Node (Student "A" [1,2,3]) Leaf Leaf) (Node (Student "D" [1,2,3,4,5,6]) (Node (Student "C" [1,2,3,4,5]) Leaf Leaf) Leaf))
+
 //Start = createStudTree [F,E,C,D,A,B] //(Node (Student "B" [1,2,3,4]) (Node (Student "F" [1,2]) (Node (Student "E" [1]) Leaf Leaf) (Node (Student "A" [1,2,3]) Leaf Leaf))
 // (Node (Student "D" [1,2,3,4,5,6]) (Node (Student "C" [1,2,3,4,5]) Leaf Leaf) Leaf))
 
@@ -224,9 +279,14 @@ Note: There is no dublication in the averages.
 Resulting tree should maintain binary search tree property.
 */
 
-//removeInt :: Int (Tree Int) -> (Tree Int)
+removeInt :: Int (Tree Int) -> (Tree Int)
+removeInt x Leaf = Leaf
+removeInt x (Node y le ri)
+| x == y = Leaf
+= (Node y (removeInt x le) (removeInt x ri))
 
-//Start = removeInt 5 (Node 4 (Node 3 (Node 3 (Node 2 (Node 1 Leaf Leaf) Leaf) Leaf) (Node 4 Leaf Leaf)) (Node 5 (Node 5 Leaf Leaf) (Node 6 Leaf Leaf))) // (Node 4 (Node 3 (Node 3 (Node 2 (Node 1 Leaf Leaf) Leaf) Leaf) (Node 4 Leaf Leaf)) Leaf)
+//Start = removeInt 5 (Node 4 (Node 3 (Node 3 (Node 2 (Node 1 Leaf Leaf) Leaf) Leaf) (Node 4 Leaf Leaf)) (Node 5 (Node 5 Leaf Leaf) (Node 6 Leaf Leaf))) 
+// (Node 4 (Node 3 (Node 3 (Node 2 (Node 1 Leaf Leaf) Leaf) Leaf) (Node 4 Leaf Leaf)) Leaf)
 //Start = removeInt 1 (Node 1 (Node 1 (Node 1 (Node 1 (Node 1 (Node 1 Leaf Leaf) Leaf) Leaf) Leaf) Leaf) Leaf) // Leaf
 
 
@@ -248,9 +308,18 @@ write a function that finds complement of a given color.
 
 colorList = [Red, Yellow, Green, Blue, Purple, Orange, Violet, Amber, Teal, Vermilion, Magenta, Chartreuse]
 
-//instance == Color
+instance == Color
+where
+	(==) Red Green = True
+	(==) Orange Blue = True
+	(==) Yellow Purple = True
+	(==) Violet Amber = True
+	(==) Teal Vermilion = True
+	(==) Magenta Chartreuse = True
+	(==) _ _ = False
 	
-//find_complement :: Color -> Color
+find_complement :: Color -> Color
+find_complement color = hd (filter (\x = x == color || color == x) colorList)
 
 //Start = find_complement Red // Green
 //Start = find_complement Green // Red
@@ -277,15 +346,34 @@ Length of 3 dimensional vector (a,b,c) is sqrt(a^2 + b^2 + c^2)
 
 ::Vector3 = { x :: Real, y :: Real, z :: Real}
 
-//class Comparisons a
-     
-//instance Comparisons Vector3
+class Comparisons a
+where
+	(!=) :: !a !a -> Bool
+	(*<) :: !a !a -> Bool
+	(*>) :: !a !a -> Bool
+	(*<=) :: !a !a -> Bool
+	(*>=) :: !a !a -> Bool
+	(*==) :: !a !a -> Bool
+	
+instance toReal Vector3
+where
+	toReal v = sqrt (v.x*v.x + v.y*v.y + v.z*v.z)
+	     
+instance Comparisons Vector3
+where
+	(!=) v1 v2 = toReal v1 <> toReal v2
+	(*<) v1 v2 = toReal v1 < toReal v2	
+	(*>) v1 v2 = toReal v1 > toReal v2
+	(*<=) v1 v2 = toReal v1 <= toReal v2	
+	(*>=) v1 v2 = toReal v1 >= toReal v2
+	(*==) v1 v2 = toReal v1 == toReal v2
+		
 	
 //Start = {x = 1.0, y = 1.0, z = 1.0} *== {x = 1.0, y = 1.0, z = 1.0} // True
 //Start = {x = 3.0, y = 4.0, z = 10.0} *== {x = 5.0, y = 0.0, z = 10.0} // True
 //Start = {x = 1.0, y = 1.0, z = 1.0} != {x = 2.0, y = 1.0, z = 1.0} // True
 //Start = {x = 1.0, y = 1.0, z = 1.0} *< {x = 2.0, y = 1.0, z = 1.0} // True
-//Start = {x = 1.0, y = 1.0, z = 1.0} *> {x = 2.0, y = 1.0, z = 1.0} // True
+//Start = {x = 1.0, y = 1.0, z = 1.0} *> {x = 2.0, y = 1.0, z = 1.0} // True ? should be False
 //Start = {x = 1.0, y = 1.0, z = 1.0} *<= {x = 1.0, y = 1.0, z = 1.0} // True
 //Start = {x = 1.0, y = 1.0, z = 1.0} *>= {x = 1.0, y = 1.0, z = 1.0} // True
 
