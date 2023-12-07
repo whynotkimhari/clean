@@ -21,7 +21,7 @@ where
 instance Operations Vector2
 	where  
 		(*==) :: Vector2 Vector2 -> Bool 
-		(*==) v1 v2 = vlen v1 ==  vlen v2
+		(*==) v1 v2 = vlen v1 == vlen v2
 		(*<) :: Vector2 Vector2 -> Bool 
 		(*<) v1 v2 = vlen v1 < vlen v2
 		(*>) :: Vector2 Vector2 -> Bool 
@@ -34,9 +34,9 @@ instance Operations Vector2
 		(!=) v1 v2 = vlen v1 <> vlen v2
 		
 vlen :: Vector2 -> Real 		  
-vlen v = sqrt( v.x*v.x + v.y*v.y) 
+vlen v = sqrt(v.x*v.x + v.y*v.y) 
 
-Start = {x = 1.0, y = 1.0} *== {x = 1.0, y = 1.0} // True
+//Start = {x = 1.0, y = 1.0} *== {x = 1.0, y = 1.0} // True
 //Start = {x = 3.0, y = 4.0} *== {x = 5.0, y = 0.0} // True
 //Start = {x = 1.0, y = 1.0} != {x = 2.0, y = 1.0} // True
 //Start = {x = 1.0, y = 1.0} *< {x = 2.0, y = 1.0} // True
@@ -47,7 +47,7 @@ Start = {x = 1.0, y = 1.0} *== {x = 1.0, y = 1.0} // True
 instance Operations Vector3
 	where  
 		(*==) :: Vector3 Vector3 -> Bool 
-		(*==) v1 v2 = vlen3 v1 ==  vlen3 v2
+		(*==) v1 v2 = vlen3 v1 == vlen3 v2
 		(*<) :: Vector3 Vector3 -> Bool 
 		(*<) v1 v2 = vlen3 v1 < vlen3 v2
 		(*>) :: Vector3 Vector3 -> Bool 
@@ -60,7 +60,7 @@ instance Operations Vector3
 		(!=) v1 v2 = vlen3 v1 <> vlen3 v2
 
 vlen3 :: Vector3 -> Real 		  
-vlen3 v = sqrt( v.x3*v.x3 + v.y3*v.y3 + v.z3*v.z3) 
+vlen3 v = sqrt(v.x3*v.x3 + v.y3*v.y3 + v.z3*v.z3) 
 
 //Start = {x3 = 1.0, y3 = 1.0, z3 = 1.0} *== {x3 = 1.0, y3 = 1.0, z3 = 1.0} // True
 //Start = {x = 3.0, y = 4.0} *== {x = 5.0, y = 0.0} // True
