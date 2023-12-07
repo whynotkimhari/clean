@@ -257,6 +257,21 @@ createStudTree :: [Student] -> (Tree Student)
 createStudTree [] = Leaf
 createStudTree [student:students] = insertToTree student (createStudTree students)
 
+// another way !! THIS WAY MORE CLEVER !!!
+createStudTree2 :: [Student] -> (Tree Student)
+createStudTree2 [] = Leaf
+createStudTree2 students = Node (new !! mid) (createStudTree2 (take mid new)) (createStudTree2 (drop (mid + 1) new)) 
+where
+	new = sortBy myCond students
+	mid = (length new) / 2
+	myCond :: Student Student -> Bool
+	myCond a b = avg (map toReal a.grades) < avg (map toReal b.grades)
+	
+//Start = createStudTree2 [A,B,C]
+//Start = createStudTree2 [A,B,C,D]
+//Start = createStudTree2 [C,D,A,B]
+//Start = createStudTree2 [F,E,C,D,A,B]
+
 //Start = createStudTree [] // Leaf
 
 //Start = (createStudTree [A,B,C]) 
