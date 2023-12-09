@@ -14,7 +14,8 @@ Using -- implement the distance function, such that, it finds the
 distances between a given point to each of the points of a given list
 and returns them in a list. */
 
-//(--) :: (Real, Real, Real) (Real, Real, Real) -> Real
+(--) :: (Real, Real, Real) (Real, Real, Real) -> Real
+(--) (a,b,c) (x,y,z) = sqrt ( (a-x)^2.0 + (b-y)^2.0 + (c-z)^2.0 )
 
 distance :: (Real, Real, Real) [(Real, Real, Real)] -> [Real]
 distance a list = [a -- x \\ x <- list]
@@ -34,7 +35,11 @@ array of arrays of strings with the vowels removed. */
 
 vowelList = ['a','e','i','o','u','A','E','I','O','U']
 
-//removeVowels :: {{String}} -> {{String}}
+removeVowel :: String -> String
+removeVowel str = {c\\c<-:str | not (isMember c vowelList)}
+
+removeVowels :: {{String}} -> {{String}}
+removeVowels arrays = {{removeVowel str \\ str <-: arr} \\ arr <-: arrays}
 
 //Start = removeVowels {{"hello","world"},{"good","morning"}} 
 // {{"hll","wrld"},{"gd","mrnng"}}
@@ -64,13 +69,33 @@ Line7 = {transport = Bus, number = 7, stops = [IK, PPK, TOK, TTK]}
 
 Linelist = [Line1, Line2, Line3, Line4, Line5, Line6, Line7]
 
+instance == Transport
+where
+	(==) Bus Bus = True
+	(==) Tram Tram = True
+	(==) Metro Metro = True
+	(==) _ _ = False
+	
+instance == Stop
+where
+	(==) IK IK = True
+	(==) PPK PPK = True
+	(==) GTK GTK = True
+	(==) AJK AJK = True
+	(==) TOK TOK = True
+	(==) TTK TTK = True
+	(==) TATK TATK = True
+	(==) BGGYK BGGYK = True
+	(==) _ _ = False
+
 
 /*------------------------------------*/
 
 /* 3.1. Write a function that for a faculty checks if
 is reachable by the given transport. */
 
-//FindLinesC :: Stop Transport -> Bool
+FindLinesC :: Stop Transport -> Bool
+FindLinesC stop trans = or [line.transport == trans && isMember stop line.stops \\ line <- Linelist]
 
 //Start = FindLinesC IK Bus // True
 //Start = FindLinesC PPK Metro // False
@@ -81,7 +106,8 @@ is reachable by the given transport. */
 /* 3.2. Write a function that for a faculty finds the line and 
 the transport pairs that are reaching it. */
 
-//FindLinesR :: Stop -> [(Int,Transport)]
+FindLinesR :: Stop -> [(Int,Transport)]
+FindLinesR stop = [(line.number,line.transport) \\line <- Linelist | isMember stop line.stops]
 
 //Start = FindLinesR IK // [(1,Bus),(2,Tram),(3,Metro),(4,Bus),(5,Tram),(7,Bus)]
 //Start = FindLinesR PPK // [(1,Bus),(4,Bus),(7,Bus)]
@@ -93,7 +119,11 @@ the transport pairs that are reaching it. */
 (transport,number) pairs for the lines that go between them.
 If there is no such line, return an empty list. */
 
-//FindLinesB :: Stop Stop -> [(Transport, Int)]
+FindLinesB :: Stop Stop -> [(Transport, Int)]
+FindLinesB stopA stopB = removeDup [(snd x, fst x) \\ x <-pathA , y <- pathB | x == y]
+where
+	pathA = FindLinesR stopA
+	pathB = FindLinesR stopB
 
 //Start = FindLinesB IK BGGYK // [(Bus,1),(Tram,2),(Metro,3),(Tram,5)]
 //Start = FindLinesB IK PPK // [(Bus,1),(Bus,4),(Bus,7)]
@@ -105,8 +135,11 @@ If there is no such line, return an empty list. */
 and returns the numbers of the lines that goes between them 
 with the given transport. */
 
-//FindLinesT :: Stop Stop Transport -> [Int]
-
+FindLinesT :: Stop Stop Transport -> [Int]
+FindLinesT stopA stopB trans = [snd x \\ x <- samePath | fst x == trans]
+where
+	samePath = FindLinesB stopA stopB
+	
 //Start = FindLinesT IK BGGYK Bus // [1]
 //Start = FindLinesT IK BGGYK Tram // [2,5]
 //Start = FindLinesT PPK AJK Metro // []
@@ -140,7 +173,13 @@ Color has become a type synonym for the type Int.
 A string is equivalent with an unboxed array of character {#Char}. A type synonym is defined in module StdString
 */
 
-//add :: a (Set a) -> (Set a) | Eq a & Ord a
+:: Set a :== [a]
+
+newSet :: (Set a)
+newSet = []
+
+add :: a (Set a) -> (Set a) | Eq a & Ord a
+add val set = sort (removeDup (set ++ [val]))
 
 //Start = add 5 [] // [5]
 //Start = add 1 [2,3,4,5] // [1,2,3,4,5]
@@ -149,18 +188,21 @@ A string is equivalent with an unboxed array of character {#Char}. A type synony
 
 
 
-//remove :: a (Set a) -> (Set a) | Eq a
+remove :: a (Set a) -> (Set a) | Eq a
+remove val set = filter ((<>)val) set
 
 //Start = remove 3 [] // []
 //Start = remove 4 [1,2,3,4,5] // [1,2,3,5]
 //Start = remove 3 [1,2,4,5] // [1,2,4,5]
 
-//union :: (Set a) (Set a) -> (Set a) | Eq a & Ord a
+union :: (Set a) (Set a) -> (Set a) | Eq a & Ord a
+union setA setB = sort (removeDup (setA ++ setB))
 
 //Start = union [1,3,9] [2,4,6,8] // [1,2,3,4,6,8,9]
 //Start = union [] [1..5] // [1,2,3,4,5]
 
-//intersection:: (Set a) (Set a) -> (Set a) | Eq a
+intersection:: (Set a) (Set a) -> (Set a) | Eq a
+intersection setA setB = removeDup [x \\ x <- setA, y <- setB | x == y]
 
 //Start = intersection [1,3,9] [1..5] // [1,3]
 //Start = intersection [1,3,9] [2,4,6,8] // []
@@ -192,9 +234,27 @@ If your age is 18 on Earth (it has 365 days) you are:
 people1 = {{firstname="Bob", planet=Mercury, age=34}, {firstname="Harry", planet=Venus, age=30},{firstname="Emilia", planet=Saturn, age=9}, {firstname="Leo", planet=Mars, age=89}}
 people2 = {{firstname="U", planet=Saturn, age=20}, {firstname="A", planet=Venus, age=20}, {firstname="B", planet=Mercury, age=20}, {firstname="X", planet=Jupiter, age=20}, {firstname="Y", planet=Mars, age=20}}
 
+instance == Planet
+where
+	(==) Mercury Mercury = True
+	(==) Venus Venus = True
+	(==) Mars Mars = True
+	(==) Jupiter Jupiter = True
+	(==) Saturn Saturn = True
+	(==) _ _ = False
 
-//ageOn :: {Person} -> {Int}
-	
+compute :: Person -> Int
+compute p 
+| p.planet == Mercury = ( p.age * 365 ) / 88
+| p.planet == Venus = ( p.age * 365 ) / 225
+| p.planet == Mars = ( p.age * 365 ) / 687
+| p.planet == Jupiter = p.age / toInt 11.8
+| p.planet == Saturn = p.age / toInt 29.4
+= p.age
+
+ageOn :: {Person} -> {Int}
+ageOn ps = {compute p\\p<-:ps}
+
 //Start = ageOn people1 // {141, 48, 0, 47}
 //Start = ageOn people2 //{0, 32, 82, 1, 10}
 
@@ -219,9 +279,19 @@ tree2 = NodeT 4 (NodeT 8 (NodeT 0 LeafT LeafT) (NodeT 1 LeafT LeafT)) (NodeT 5 L
  
 //which traversal is it?
 
+collectVals :: (TreeT Int) -> [Int]
+collectVals LeafT = []
+collectVals (NodeT x l r) = (collectVals l) ++ [x] ++ (collectVals r)
 
-//goodNodes :: (TreeT Int) -> Int
-	  
+collectNode :: (TreeT Int) -> [(TreeT Int)]
+collectNode LeafT = []
+collectNode (NodeT x l r) = collectNode l ++ [(NodeT x l r)] ++ collectNode r
+
+goodNodes :: (TreeT Int) -> Int
+goodNodes tree = length [x \\ (NodeT x l r) <- nodes | avg (collectVals (NodeT x l r)) == x]
+where
+	nodes = collectNode tree
+
 //Start = goodNodes tree1 // 6
 //Start = goodNodes tree2 // 5
 //Start = goodNodes LeafT // 0
@@ -251,7 +321,16 @@ treeTrio1 = Node 1 ( Node 2 (Node 5 (Node 13 Leaf Leaf Leaf) (Node 14 Leaf Leaf 
 treeTrio2 :: Tree Int
 treeTrio2 = Node 1 Leaf Leaf Leaf
 
-//count :: (Tree a) -> Int
+instance toInt (Tree a)
+where
+	toInt Leaf = 0
+	toInt _ = 1
+
+count :: (Tree a) -> Int
+count Leaf = 0
+count (Node _ a b c)
+| toInt a + toInt b + toInt c == 3 = 1 + count a + count b + count c
+= count a + count b + count c
 
 //Start = count treeTrio1 // 3
 //Start = count treeTrio2 // 0
@@ -277,8 +356,16 @@ the biggest node that has only right child is 5. */
 treefun :: Tree2 Int
 treefun = Node2 1 (Node2 2 (Node2 4 Leaf2 (Node2 9 Leaf2 Leaf2)) (Node2 5 Leaf2 (Node2 11 Leaf2 Leaf2))) (Node2 3 (Node2 6 (Node2 12 Leaf2 Leaf2) Leaf2) (Node2 7 (Node2 14 Leaf2 Leaf2) (Node2 15 Leaf2 Leaf2)))
 
+dadsLostLeftChild :: (Tree2 Int) -> [Int]
+dadsLostLeftChild Leaf2 = []
+dadsLostLeftChild (Node2 _ Leaf2 Leaf2) = []
+dadsLostLeftChild (Node2 x Leaf2 ri) = [x] ++ dadsLostLeftChild ri
+dadsLostLeftChild (Node2 x le ri) = dadsLostLeftChild le ++ dadsLostLeftChild ri
 
-//biggestNode :: (Tree2 Int) -> Int
+biggestNode :: (Tree2 Int) -> Int
+biggestNode tree = maxList list
+where
+	list = dadsLostLeftChild tree
 
 //Start = biggestNode treefun // 5
 
@@ -325,11 +412,34 @@ eg4: [3,3,8,6] <<<< [4,5,9,7] // True
      3<4, 3<5, 8<9, 6<7 , all are less so sum is compared
      3+3=6 < 9+7=18 so True */
 
-//class Comparisons a 
-//where
-   // (>>>>) :: a  a -> Bool
-   // (<<<<) :: a  a -> Bool
+class Comparisons a 
+where
+   	(>>>>) :: a  a -> Bool
+   	(<<<<) :: a  a -> Bool
 
+instance Comparisons [Int]
+where
+	(>>>>) :: [Int] [Int] -> Bool
+	(>>>>) listA listB 
+	| n <> m = n > m
+	= and [cndGt, s1 > s2]
+	where
+		n = length listA
+		m = length listB
+		cndGt = and [ a > b \\ a <- listA & b <-listB ]
+		s1 = sum (take (n / 2) listA)
+		s2 = sum (drop (n / 2) listB)
+		
+	(<<<<) :: [Int] [Int] -> Bool
+	(<<<<) listA listB 
+	| n <> m = n < m
+	= and [cndGt, s1 < s2]
+	where
+		n = length listA
+		m = length listB
+		cndGt = and [ a < b \\ a <- listA & b <-listB ]
+		s1 = sum (take (n / 2) listA)
+		s2 = sum (drop (n / 2) listB)
 
 //Start = [4,5,8,1] >>>> [2,3,4,0] // True
 //Start = [4,5,8,1] >>>> [2,3,4,0,1] // False
@@ -352,7 +462,14 @@ If only the second condition holds for the second tuple component,
 return in Just construct the pair of product of the tuple elements and 1.
 If none of the conditions are true, return Nothing. */
 
-//checkMaybe :: (Int, Int) (Int -> Bool) (Int -> Bool) -> (Maybe (Int, Int)) 
+:: Maybe a = Just a | Nothing
+
+checkMaybe :: (Int, Int) (Int -> Bool) (Int -> Bool) -> (Maybe (Int, Int)) 
+checkMaybe (a,b) f1 f2
+| f1 a && f2 b = Just (a+b,a*b)
+| f1 a = Just (a+b,0)
+| f2 b = Just (a*b,1)
+= Nothing
 
 //Start = checkMaybe (1,2) isEven isOdd // Nothing
 //Start = checkMaybe (2,3) isEven isOdd // (Just (5,6))
